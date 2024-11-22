@@ -1,101 +1,73 @@
-import Image from "next/image";
+"use client";
+import { Button } from "@/components/ui/button";
+import AnimatedCatLogo from "@/components/ui/animatedCatLogo";
+import { motion } from "framer-motion";
+import { useSignIn } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { GitHubIcon } from "@/components/ui/icons";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { signIn } = useSignIn();
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleGitHubSignIn = async () => {
+    try {
+      if (!signIn) {
+        console.error("Sign-in is not initialized");
+        return;
+      }
+      const result = await signIn.authenticateWithRedirect({
+        strategy: "oauth_github",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/dashboard",
+      });
+    } catch (error) {
+      console.error("Error during GitHub sign-in:", error);
+      // You might want to show a toast or error message to the user here
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <div className="w-full max-w-[1400px] mx-auto">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 py-8 lg:py-16">
+          <div className="flex items-center justify-center w-full lg:w-auto shrink-0">
+            <AnimatedCatLogo />
+          </div>
+          <div className="flex flex-col items-center lg:items-start justify-center gap-6 lg:gap-16 w-full lg:max-w-2xl">
+            <div className="flex flex-col items-center lg:items-start gap-4 w-full">
+              <h1 className="text-center lg:text-left text-4xl lg:text-7xl font-bold text-foreground">
+                GitHub Profile Generator
+              </h1>
+              <p className="text-center lg:text-left text-lg lg:text-2xl text-muted-foreground">
+                Create an awesome GitHub profile in seconds using AI
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center lg:items-start gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-full"
+              >
+                <Button
+                  onClick={handleGitHubSignIn}
+                  variant="outline"
+                  size="lg"
+                  className="w-full lg:w-auto px-8 lg:px-24 bg-black text-white dark:bg-white dark:text-black"
+                >
+                  <GitHubIcon className="mr-2 h-4 w-4" />
+                  Continue with GitHub
+                </Button>
+              </motion.div>
+              <p className="text-base lg:text-lg text-center lg:text-left text-muted-foreground">
+                No credit card required. Login with GitHub to get started.
+              </p>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
