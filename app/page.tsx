@@ -42,7 +42,7 @@ export default function Home() {
           <div className="flex items-center justify-center w-full lg:w-auto shrink-0">
             <AnimatedCatLogo />
           </div>
-          <div className="flex flex-col items-center lg:items-start justify-center gap-6 lg:gap-16 w-full lg:max-w-2xl">
+          <div className="flex flex-col items-center lg:items-start justify-center gap-2 lg:gap-8 w-full lg:max-w-2xl">
             <div className="flex flex-col items-center lg:items-start gap-4 w-full">
               <h1 className="text-center lg:text-left text-4xl lg:text-7xl font-bold text-foreground">
                 GitHub Profile Generator

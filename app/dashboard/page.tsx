@@ -1,192 +1,121 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
-import LoadingSpinner from "@/components/ui/loading-spinner";
+import { Button } from "@/components/ui/button";
+import AnimatedCatLogo from "@/components/ui/animatedCatLogo";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { User } from "@supabase/supabase-js";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
-import { Github, Users, BookOpen, Star } from "lucide-react";
+import { GitHubIcon, PlusCircle, History } from "lucide-react"; // Added icons
+import { useState, useEffect } from "react";
+import LoadingSpinner from "@/components/ui/loading-spinner";
+import TypingAnimation from "@/components/ui/typing-animation";
+import { createClient } from "@/lib/supabase";
 
-interface GitHubStats {
-  public_repos: number;
-  followers: number;
-  following: number;
-  avatar_url: string;
-  name: string;
-  login: string;
-  bio: string;
-  location: string;
-  blog: string;
-}
-
-export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [githubStats, setGithubStats] = useState<GitHubStats | null>(null);
+export default function Home() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [userName, setUserName] = useState("");
   const supabase = createClient();
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const {
-          data: { user: sessionUser },
-          error: sessionError,
-        } = await supabase.auth.getUser();
-
-        if (sessionError || !sessionUser) {
-          throw sessionError || new Error("No user found");
-        }
-
-        setUser(sessionUser);
-        setGithubStats({
-          public_repos: sessionUser.user_metadata.public_repos,
-          followers: sessionUser.user_metadata.followers,
-          following: sessionUser.user_metadata.following,
-          avatar_url: sessionUser.user_metadata.avatar_url,
-          name: sessionUser.user_metadata.full_name,
-          login: sessionUser.user_metadata.user_name,
-          bio: sessionUser.user_metadata.bio || "",
-          location: sessionUser.user_metadata.location || "",
-          blog: sessionUser.user_metadata.blog || "",
-        });
-      } catch (error) {
-        console.error("Session error:", error);
-        setError(error instanceof Error ? error.message : "An error occurred");
-        router.push("/");
-      } finally {
-        setLoading(false);
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user?.user_metadata?.full_name) {
+        setUserName(user.user_metadata.full_name.split(" ")[0]); // Get first name
+      } else {
+        setUserName("there"); // Fallback name if full_name is not available
       }
+      setIsLoading(false);
     };
+    getUser();
+  }, []);
 
-    checkSession();
-  }, [router, supabase]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoadingSpinner size="lg" className="text-foreground" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-red-500">Error: {error}</div>
-      </div>
-    );
-  }
+  const buttonVariants = {
+    hover: {
+      scale: 1.05,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+    tap: {
+      scale: 0.95,
+    },
+  };
 
   return (
-    <div className="container mx-auto py-20">
-      {githubStats && (
-        <div className="space-y-8">
-          {/* Profile Overview */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row gap-8 items-start">
-                <div className="relative h-32 w-32 rounded-full overflow-hidden">
-                  <Image
-                    src={githubStats.avatar_url}
-                    alt={githubStats.name}
-                    fill
-                    className="object-cover"
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+      <div className="w-full max-w-[1400px] mx-auto">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 py-8 lg:py-16">
+          <motion.div
+            className="flex items-center justify-center w-full lg:w-auto shrink-0"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <AnimatedCatLogo />
+          </motion.div>
+          <motion.div
+            className="flex flex-col items-center lg:items-start justify-center gap-6 lg:gap-16 w-full lg:max-w-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          >
+            <motion.div
+              className="flex flex-col items-center lg:items-start gap-4 w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+            >
+              <h1 className="text-center lg:text-left text-4xl lg:text-7xl font-bold text-foreground">
+                {!isLoading && (
+                  <TypingAnimation
+                    className="text-center lg:text-left text-4xl lg:text-7xl font-bold text-foreground"
+                    text={`Hi ${userName}!`}
+                    duration={150}
                   />
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold">{githubStats.name}</h2>
-                  <p className="text-muted-foreground">@{githubStats.login}</p>
-                  {githubStats.bio && (
-                    <p className="text-muted-foreground max-w-xl">
-                      {githubStats.bio}
-                    </p>
-                  )}
-                  {(githubStats.location || githubStats.blog) && (
-                    <div className="flex gap-4 text-sm text-muted-foreground">
-                      {githubStats.location && (
-                        <span>{githubStats.location}</span>
-                      )}
-                      {githubStats.blog && (
-                        <a
-                          href={
-                            githubStats.blog.startsWith("http")
-                              ? githubStats.blog
-                              : `https://${githubStats.blog}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
-                        >
-                          {githubStats.blog}
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* GitHub Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Public Repositories
-                </CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {githubStats.public_repos}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Followers</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {githubStats.followers}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Following</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {githubStats.following}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Previous Generations */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Previous Profile Generations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                No previous generations yet.
+                )}
+              </h1>
+              <p className="text-center lg:text-left text-lg lg:text-2xl text-muted-foreground">
+                What would you like to do?
               </p>
-            </CardContent>
-          </Card>
+            </motion.div>
+
+            <motion.div
+              className="flex flex-col items-center lg:items-start gap-4 w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
+                className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4"
+              >
+                <Button
+                  onClick={() => router.push("/create")}
+                  size="lg"
+                  className="w-full p-8 text-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <PlusCircle className="mr-2 h-5 w-5" />
+                  Create New Template
+                </Button>
+
+                <Button
+                  onClick={() => router.push("/templates")}
+                  variant="outline"
+                  size="lg"
+                  className="w-full p-8 text-lg border-2 hover:bg-accent shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <History className="mr-2 h-5 w-5" />
+                  View Templates
+                </Button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
