@@ -1,11 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const AnimatedCatLogo = () => {
+  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (event) => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 100;
+      const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+      // Keep values within reasonable bounds even when cursor is outside
+      const boundedX = Math.max(0, Math.min(100, x));
+      const boundedY = Math.max(0, Math.min(100, y));
+
+      setMousePosition({ x: boundedX, y: boundedY });
+    };
+
+    // Listen to mouse movement on the whole window
+    window.addEventListener("mousemove", handleGlobalMouseMove);
+    return () => window.removeEventListener("mousemove", handleGlobalMouseMove);
+  }, []);
+
+  const getEyePosition = () => {
+    const maxMove = 5;
+    const x = ((mousePosition.x - 50) / 50) * maxMove;
+    const y = ((mousePosition.y - 50) / 50) * maxMove;
+    return { x, y };
+  };
+
   return (
-    <div className="relative w-[600px] h-[600px] flex items-center justify-center">
+    <div
+      ref={containerRef}
+      className="relative w-[600px] h-[600px] flex items-center justify-center bg-background"
+    >
       <motion.svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="300 250 500 500"
@@ -32,31 +66,41 @@ const AnimatedCatLogo = () => {
             />
           </g>
 
-          {/* Left Eye */}
-          <g transform="matrix(1.56 0 0 1.56 468.45 609.66)">
-            <path
-              style={{
-                fill: "currentColor",
-                opacity: 1,
-              }}
-              className="text-foreground"
-              transform="translate(-67.21, -445.58)"
-              d="M 56.1 424.8 C 50.6 430.5 48.7 437.7 48.4 444.1 C 48.4 453.70000000000005 51.199999999999996 461.40000000000003 56.1 466.40000000000003 C 62.9 473.3 72.2 473.1 78.7 466.1 C 88.5 455.5 88.4 435.6 78.7 425.1 C 72.2 418 62.7 417.9 56.1 424.8 z"
-            />
-          </g>
+          {/* Eyes container that moves together */}
+          <motion.g
+            animate={getEyePosition()}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 25,
+            }}
+          >
+            {/* Left Eye */}
+            <g transform="matrix(1.56 0 0 1.56 468.45 609.66)">
+              <path
+                style={{
+                  fill: "currentColor",
+                  opacity: 1,
+                }}
+                className="text-foreground"
+                transform="translate(-67.21, -445.58)"
+                d="M 56.1 424.8 C 50.6 430.5 48.7 437.7 48.4 444.1 C 48.4 453.70000000000005 51.199999999999996 461.40000000000003 56.1 466.40000000000003 C 62.9 473.3 72.2 473.1 78.7 466.1 C 88.5 455.5 88.4 435.6 78.7 425.1 C 72.2 418 62.7 417.9 56.1 424.8 z"
+              />
+            </g>
 
-          {/* Right Eye */}
-          <g transform="matrix(1.56 0 0 1.56 611.25 609.65)">
-            <path
-              style={{
-                fill: "currentColor",
-                opacity: 1,
-              }}
-              className="text-foreground"
-              transform="translate(-158.6, -445.58)"
-              d="M 148.2 424 C 137 434.3 137 457 148.2 467.2 C 154.7 473.09999999999997 163.5 472.8 169.6 466.5 C 175.2 460.7 177.2 453.4 177.4 445.5 C 177.20000000000002 437.6 175.20000000000002 430.4 169.5 424.6 C 163.4 418.3 154.6 418.1 148.2 424 z"
-            />
-          </g>
+            {/* Right Eye */}
+            <g transform="matrix(1.56 0 0 1.56 611.25 609.65)">
+              <path
+                style={{
+                  fill: "currentColor",
+                  opacity: 1,
+                }}
+                className="text-foreground"
+                transform="translate(-158.6, -445.58)"
+                d="M 148.2 424 C 137 434.3 137 457 148.2 467.2 C 154.7 473.09999999999997 163.5 472.8 169.6 466.5 C 175.2 460.7 177.2 453.4 177.4 445.5 C 177.20000000000002 437.6 175.20000000000002 430.4 169.5 424.6 C 163.4 418.3 154.6 418.1 148.2 424 z"
+              />
+            </g>
+          </motion.g>
         </motion.g>
       </motion.svg>
     </div>

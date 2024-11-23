@@ -63,13 +63,13 @@ export default function Home() {
                   onClick={handleGitHubSignIn}
                   variant="outline"
                   size="lg"
-                  className="w-full lg:w-auto px-8 lg:px-24 bg-black text-white dark:bg-white dark:text-black"
+                  className="w-full lg:w-auto px-4 lg:px-16 bg-black text-white dark:bg-white dark:text-black text-xl"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <LoadingSpinner size="sm" className="mr-2" />
                   ) : (
-                    <GitHubIcon className="mr-2 h-4 w-4" />
+                    <GitHubIcon className="mr-2 h-6 w-6" />
                   )}
                   {isLoading ? "Connecting..." : "Continue with GitHub"}
                 </Button>
