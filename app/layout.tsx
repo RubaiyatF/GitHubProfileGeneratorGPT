@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/ui/Footer";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 
 const sourceSansPro = Source_Sans_3({
   subsets: ["latin"],
@@ -14,16 +15,61 @@ const sourceSansPro = Source_Sans_3({
 export const metadata: Metadata = {
   title: "GitHub Profile Generator",
   description: "Create an awesome GitHub profile in seconds using AI",
+  metadataBase: new URL("http://localhost:3000"),
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <ClerkProvider>
-      <html lang="en">
+  const cookieStore = cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll().map((cookie) => ({
+            name: cookie.name,
+            value: cookie.value,
+          }));
+        },
+        setAll(cookies) {
+          cookies.forEach((cookie) => {
+            cookieStore.set(cookie.name, cookie.value, cookie.options);
+          });
+        },
+      },
+    }
+  );
+
+  try {
+    // First get the session
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    // Then verify the user with getUser
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      throw error || new Error("User not found");
+    }
+
+    console.log("🏗️ Layout - Authenticated User:", user.email);
+
+    return (
+      <html lang="en" suppressHydrationWarning>
         <body className={sourceSansPro.className}>
           <ThemeProvider
             attribute="class"
@@ -31,12 +77,34 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-            {children}
-            <Footer />
+            <main className="flex min-h-screen flex-col">
+              <Navbar user={user} /> {/* Pass user instead of session */}
+              {children}
+              <Footer />
+            </main>
           </ThemeProvider>
         </body>
       </html>
-    </ClerkProvider>
-  );
+    );
+  } catch (error) {
+    console.error("❌ Layout - Error:", error);
+    return (
+      <html lang="en" suppressHydrationWarning>
+        <body className={sourceSansPro.className}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="flex min-h-screen flex-col">
+              <Navbar user={null} />
+              {children}
+              <Footer />
+            </main>
+          </ThemeProvider>
+        </body>
+      </html>
+    );
+  }
 }

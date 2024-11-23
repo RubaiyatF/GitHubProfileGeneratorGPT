@@ -2,31 +2,39 @@
 import { Button } from "@/components/ui/button";
 import AnimatedCatLogo from "@/components/ui/animatedCatLogo";
 import { motion } from "framer-motion";
-import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { GitHubIcon } from "@/components/ui/icons";
+import { createClient } from "@/lib/supabase";
+import { useState } from "react";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 export default function Home() {
-  const { signIn } = useSignIn();
   const router = useRouter();
+  const supabase = createClient();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGitHubSignIn = async () => {
     try {
-      if (!signIn) {
-        console.error("Sign-in is not initialized");
-        return;
-      }
-      const result = await signIn.authenticateWithRedirect({
-        strategy: "oauth_github",
-        redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/dashboard",
+      setIsLoading(true);
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
       });
+
+      if (error) throw error;
     } catch (error) {
-      console.error("Error during GitHub sign-in:", error);
-      // You might want to show a toast or error message to the user here
+      console.error("Sign in error:", error);
+      setIsLoading(false);
     }
   };
-
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-[1400px] mx-auto">
@@ -56,9 +64,14 @@ export default function Home() {
                   variant="outline"
                   size="lg"
                   className="w-full lg:w-auto px-8 lg:px-24 bg-black text-white dark:bg-white dark:text-black"
+                  disabled={isLoading}
                 >
-                  <GitHubIcon className="mr-2 h-4 w-4" />
-                  Continue with GitHub
+                  {isLoading ? (
+                    <LoadingSpinner size="sm" className="mr-2" />
+                  ) : (
+                    <GitHubIcon className="mr-2 h-4 w-4" />
+                  )}
+                  {isLoading ? "Connecting..." : "Continue with GitHub"}
                 </Button>
               </motion.div>
               <p className="text-base lg:text-lg text-center lg:text-left text-muted-foreground">

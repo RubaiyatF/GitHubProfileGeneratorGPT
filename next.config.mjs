@@ -4,9 +4,18 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+      {
+        protocol: "https",
         hostname: "metaschool.so",
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["localhost:3000", "localhost:3001"],
+    },
   },
 };
 
