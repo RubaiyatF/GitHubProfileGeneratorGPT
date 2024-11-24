@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/ui/logo";
 import WordFadeIn from "@/components/ui/word-fade-in";
 
@@ -10,6 +10,7 @@ export interface StepComponentProps {
   onChange: (value: any) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   inputRef: React.RefObject<any>;
+  autoFocus?: boolean;
 }
 
 interface StepConfig {
@@ -72,6 +73,20 @@ const animations = {
       },
     },
   },
+  stepperVariants: {
+    initial: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    animate: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 50 : -50,
+      opacity: 0,
+    }),
+  },
 };
 
 // Form Step Component
@@ -81,12 +96,27 @@ const FormStep: React.FC<{
   onChange: (value: any) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   inputRef: React.RefObject<any>;
-}> = ({ config, value, onChange, onKeyDown, inputRef }) => {
+  direction: number;
+}> = ({ config, value, onChange, onKeyDown, inputRef, direction }) => {
   const StepComponent = config.component;
+
+  // Focus input on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <motion.div
-      variants={animations.itemVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={animations.stepperVariants}
+      custom={direction}
       className="space-y-6 relative"
     >
       <div className="flex items-center space-x-4">
@@ -115,6 +145,7 @@ const FormStep: React.FC<{
         onChange={onChange}
         onKeyDown={onKeyDown}
         inputRef={inputRef}
+        autoFocus
       />
     </motion.div>
   );
@@ -126,6 +157,7 @@ export const AnimatedForm: React.FC<{
   onSubmit: (data: FormData) => void;
 }> = ({ steps, onSubmit }) => {
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(0);
   const [formData, setFormData] = useState<FormData>(() => {
     if (!steps || steps.length === 0) return {};
     return steps.reduce((acc, step) => ({ ...acc, [step.key]: "" }), {});
@@ -133,31 +165,79 @@ export const AnimatedForm: React.FC<{
 
   const inputRef = useRef<any>(null);
 
+  // Add useEffect for global keyboard events
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [step]);
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      console.log("Global key pressed:", e.key);
 
-  const handleNext = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    if (step === steps.length) {
+      if (
+        e.target instanceof HTMLTextAreaElement &&
+        e.key === "Enter" &&
+        e.shiftKey
+      ) {
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handlePrevious();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [step]); // Re-attach when step changes
+
+  const handleNext = (e?: { preventDefault: () => void }) => {
+    console.log("Next triggered, current step:", step);
+    e?.preventDefault();
+
+    if (step < steps.length) {
+      setDirection(1);
+      setStep((prev) => prev + 1);
+      // Clear focus before transitioning
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    } else if (step === steps.length) {
       onSubmit(formData);
-    } else {
-      setStep((prev) => Math.min(prev + 1, steps.length));
     }
   };
 
   const handlePrevious = () => {
-    setStep((prev) => Math.max(prev - 1, 1));
+    console.log("Previous triggered, current step:", step);
+    if (step > 1) {
+      setDirection(-1);
+      setStep((prev) => prev - 1);
+      // Clear focus before transitioning
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  // Keep this as a backup for form-level handling
+  const handleFormKeyDown = (e: React.KeyboardEvent) => {
+    console.log("Form key pressed:", e.key, "Current step:", step);
+
+    if (
+      e.target instanceof HTMLTextAreaElement &&
+      e.key === "Enter" &&
+      e.shiftKey
+    ) {
+      return;
+    }
+
     if (e.key === "Enter") {
       e.preventDefault();
-      handleNext(e);
-    } else if (e.key === "Escape" && step > 1) {
+      e.stopPropagation();
+      handleNext();
+    } else if (e.key === "Escape") {
       e.preventDefault();
+      e.stopPropagation();
       handlePrevious();
     }
   };
@@ -240,21 +320,28 @@ export const AnimatedForm: React.FC<{
         <motion.form
           variants={animations.formVariants}
           className="flex-1 space-y-8"
+          onSubmit={(e) => e.preventDefault()}
+          onKeyDown={handleFormKeyDown}
+          tabIndex={0} // Make the form focusable
         >
-          {currentStep && (
-            <FormStep
-              config={currentStep}
-              value={formData[currentStep.key] || ""}
-              onChange={(value) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  [currentStep.key]: value,
-                }))
-              }
-              onKeyDown={handleKeyDown}
-              inputRef={inputRef}
-            />
-          )}
+          <AnimatePresence mode="wait" custom={direction}>
+            {currentStep && (
+              <FormStep
+                key={step}
+                config={currentStep}
+                value={formData[currentStep.key] || ""}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    [currentStep.key]: value,
+                  }))
+                }
+                onKeyDown={handleFormKeyDown}
+                inputRef={inputRef}
+                direction={direction}
+              />
+            )}
+          </AnimatePresence>
 
           <motion.div
             className="flex justify-end gap-6 mt-12"
