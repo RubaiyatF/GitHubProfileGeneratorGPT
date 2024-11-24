@@ -1,291 +1,226 @@
 "use client";
-
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import Logo from "@/components/ui/logo";
-import TypingAnimation from "@/components/ui/typing-animation";
+import { motion } from "framer-motion";
 
-interface Question {
-  id: number;
-  text: string;
-  type: "text" | "multiselect" | "radio" | "slider";
-  options?: string[];
-  min?: number;
-  max?: number;
-}
+const AnimatedForm = () => {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
-const questions: Question[] = [
-  {
-    id: 1,
-    text: "Welcome! Let's customize your GitHub profile. First, tell me your full name:",
-    type: "text",
-  },
-  {
-    id: 2,
-    text: "What's your current role/designation?",
-    type: "text",
-  },
-  {
-    id: 3,
-    text: "Pick your top skills (up to 5):",
-    type: "multiselect",
-    options: [
-      "JavaScript",
-      "Python",
-      "Java",
-      "React",
-      "Node.js",
-      "TypeScript",
-      "Docker",
-      "AWS",
-    ],
-  },
-  {
-    id: 4,
-    text: "How many years of experience do you have?",
-    type: "slider",
-    min: 0,
-    max: 20,
-  },
-];
+  const steps = [
+    { number: 1, title: "Personal Details" },
+    { number: 2, title: "Contact Information" },
+    { number: 3, title: "Your Message" },
+  ];
 
-interface QuestionCardProps {
-  question: Question;
-  answer: any;
-  onAnswer: (value: any) => void;
-  isOpen: boolean;
-  onOpenChange: () => void;
-  currentQuestion: number;
-  setCurrentQuestion: (value: number) => void;
-}
+  const pageVariants = {
+    hidden: {
+      opacity: 0,
+      y: -30,
+      scale: 0.95,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.6, -0.05, 0.01, 0.99],
+        when: "beforeChildren",
+        staggerChildren: 0.2,
+      },
+    },
+  };
 
-const QuestionCard: React.FC<QuestionCardProps> = ({
-  question,
-  answer,
-  onAnswer,
-  isOpen,
-  onOpenChange,
-  currentQuestion,
-  setCurrentQuestion,
-}) => {
-  const renderAnswer = () => {
-    switch (question.type) {
-      case "text":
-        return (
-          <Input
-            value={answer || ""}
-            onChange={(e) => onAnswer(e.target.value)}
-            className="text-xl h-14"
-            placeholder="Type your answer here..."
-          />
-        );
-      case "multiselect":
-        return (
-          <div className="space-y-4">
-            {question.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-4">
-                <input
-                  type="checkbox"
-                  id={option}
-                  checked={(answer || []).includes(option)}
-                  onChange={(e) => {
-                    const newAnswer = answer || [];
-                    if (e.target.checked && newAnswer.length < 5) {
-                      onAnswer([...newAnswer, option]);
-                    } else if (!e.target.checked) {
-                      onAnswer(
-                        newAnswer.filter((item: string) => item !== option)
-                      );
-                    }
-                  }}
-                  className="w-6 h-6"
-                />
-                <Label htmlFor={option} className="text-xl">
-                  {option}
-                </Label>
-              </div>
-            ))}
-          </div>
-        );
-      case "slider":
-        return (
-          <div className="space-y-6">
-            <Slider
-              min={question.min}
-              max={question.max}
-              step={1}
-              value={[answer || question.min || 0]}
-              onValueChange={(value) => onAnswer(value[0])}
-              className="w-full"
-            />
-            <p className="text-center text-xl">
-              {answer || question.min || 0} years
-            </p>
-          </div>
-        );
-      default:
-        return null;
-    }
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: -30,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.6, -0.05, 0.01, 0.99],
+      },
+    },
+  };
+
+  const formVariants = {
+    hidden: {
+      opacity: 0,
+      y: -30,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const handleNext = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setStep((prev) => Math.min(prev + 1, 3));
+  };
+
+  const handlePrevious = () => {
+    setStep((prev) => Math.max(prev - 1, 1));
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
-      className="w-full"
+      className="min-h-screen flex items-center justify-center bg-background p-4 sm:p-6"
+      initial="hidden"
+      animate="visible"
+      variants={pageVariants}
     >
-      <Card className="shadow-lg border-2">
-        <Collapsible open={isOpen} onOpenChange={onOpenChange}>
-          <CollapsibleTrigger className="w-full p-6 flex items-center justify-between hover:bg-gray-50/50 transition-colors duration-200">
-            <div className="flex items-center space-x-4">
-              <span className="text-xl font-medium">
-                {answer
-                  ? `Selected: ${
-                      Array.isArray(answer) ? answer.join(", ") : answer
-                    }`
-                  : "Choose your answer"}
-              </span>
-            </div>
-            {isOpen ? (
-              <ChevronUp className="h-6 w-6" />
-            ) : (
-              <ChevronDown className="h-6 w-6" />
-            )}
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="p-6 border-t space-y-6">
-              {renderAnswer()}
+      <div className="w-full max-w-[1800px] p-6 sm:p-8 lg:p-12 flex flex-col lg:flex-row gap-8 lg:gap-24">
+        {/* Timeline Section */}
+        <motion.div className="relative lg:w-96 w-full lg:flex-shrink-0">
+          <motion.div
+            className="absolute left-6 lg:left-8 top-8 w-px bg-muted"
+            initial={{ height: 0 }}
+            animate={{ height: "calc(100% - 64px)" }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          />
 
-              <div className="flex justify-between pt-4">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="text-lg px-6 py-3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentQuestion(Math.max(0, currentQuestion - 1));
-                  }}
-                  disabled={currentQuestion === 0}
+          {steps.map(({ number, title }, index) => (
+            <motion.div
+              key={number}
+              className="relative flex items-center mb-20 pl-16 lg:pl-20"
+              variants={itemVariants}
+              custom={index}
+            >
+              <motion.div
+                className={`absolute left-0 w-12 h-12 rounded-full border-2 flex items-center justify-center text-lg
+                  ${
+                    number <= step
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-muted bg-background text-muted-foreground"
+                  }`}
+                animate={{
+                  scale: number === step ? [1, 1.1, 1] : 1,
+                  transition: {
+                    duration: 1,
+                    repeat: number === step ? Infinity : 0,
+                  },
+                }}
+              >
+                {number}
+              </motion.div>
+              <div className="ml-6">
+                <h3
+                  className={`text-xl lg:text-2xl font-medium ${
+                    number <= step ? "text-foreground" : "text-muted-foreground"
+                  }`}
                 >
-                  git stash
-                </Button>
-                <Button
-                  size="lg"
-                  className="text-lg px-6 py-3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (answer) {
-                      setCurrentQuestion(
-                        Math.min(questions.length - 1, currentQuestion + 1)
-                      );
-                    }
-                  }}
-                  disabled={currentQuestion === questions.length - 1 || !answer}
-                >
-                  git commit
-                </Button>
+                  {title}
+                </h3>
+                {number === step && (
+                  <motion.div
+                    className="h-px w-16 bg-primary mt-2"
+                    initial={{ width: 0 }}
+                    animate={{ width: 64 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                )}
               </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Form Section */}
+        <motion.form variants={formVariants} className="flex-1 space-y-8">
+          {step === 1 && (
+            <motion.div variants={itemVariants} className="space-y-6">
+              <label className="block text-xl lg:text-2xl font-medium text-foreground">
+                Name
+              </label>
+              <motion.input
+                whileFocus={{ scale: 1.02 }}
+                type="text"
+                className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div variants={itemVariants} className="space-y-6">
+              <label className="block text-xl lg:text-2xl font-medium text-foreground">
+                Email
+              </label>
+              <motion.input
+                whileFocus={{ scale: 1.02 }}
+                type="email"
+                className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div variants={itemVariants} className="space-y-6">
+              <label className="block text-xl lg:text-2xl font-medium text-foreground">
+                Message
+              </label>
+              <motion.textarea
+                whileFocus={{ scale: 1.02 }}
+                className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
+                rows={6}
+                value={formData.message}
+                onChange={(e) =>
+                  setFormData({ ...formData, message: e.target.value })
+                }
+              />
+            </motion.div>
+          )}
+
+          <motion.div
+            className="flex justify-end gap-6 mt-12"
+            variants={itemVariants}
+          >
+            {step > 1 && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handlePrevious}
+                className="px-8 py-4 text-lg lg:text-xl border-2 border-primary text-foreground rounded-lg hover:bg-accent transition-colors"
+                type="button"
+              >
+                Previous
+              </motion.button>
+            )}
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleNext}
+              className="px-8 py-4 text-lg lg:text-xl bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              type="button"
+            >
+              {step === 3 ? "Submit" : "Next"}
+            </motion.button>
+          </motion.div>
+        </motion.form>
+      </div>
     </motion.div>
   );
 };
 
-const CreatePage: React.FC = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, any>>({});
-  const [openQuestion, setOpenQuestion] = useState(1);
-
-  return (
-    <div className="h-[calc(100vh-20px)] mt-[20px]">
-      <div className="h-full relative px-4">
-        {/* Timeline - Fixed left position */}
-        <div className="absolute left-8 top-0 bottom-0 w-[2px] bg-gray-200">
-          <motion.div
-            className="absolute w-4 h-4 -left-[6px] bg-primary rounded-full shadow-lg border-2 border-black "
-            initial={{ top: "50%" }}
-            animate={{
-              top: `${(currentQuestion / (questions.length - 1)) * 100}%`,
-              backgroundColor: answers[questions[currentQuestion].id]
-                ? "rgb(var(--primary))"
-                : "white",
-            }}
-            transition={{ type: "spring", stiffness: 100 }}
-          />
-        </div>
-
-        {/* Content Container - Centered vertically */}
-        <div className="h-full flex items-center">
-          <div className="w-full pl-16">
-            {" "}
-            {/* Padding to account for timeline */}
-            <div className="max-w-2xl">
-              {/* Logo and Question */}
-              <div className="mb-8 flex items-start gap-4">
-                <motion.div
-                  className="w-12 h-12 relative"
-                  animate={{
-                    y: [0, -8, 0], // Move up and down
-                  }}
-                  transition={{
-                    duration: 2,
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                  }}
-                >
-                  <Logo />
-                </motion.div>
-                <div className="flex-1">
-                  <TypingAnimation
-                    text={questions[currentQuestion].text}
-                    className="text-3xl text-left leading-tight"
-                    duration={10}
-                  />
-                </div>
-              </div>
-
-              {/* Question Card */}
-              <AnimatePresence mode="wait">
-                <QuestionCard
-                  key={questions[currentQuestion].id}
-                  question={questions[currentQuestion]}
-                  answer={answers[questions[currentQuestion].id]}
-                  onAnswer={(value) =>
-                    setAnswers((prev) => ({
-                      ...prev,
-                      [questions[currentQuestion].id]: value,
-                    }))
-                  }
-                  isOpen={openQuestion === questions[currentQuestion].id}
-                  onOpenChange={() =>
-                    setOpenQuestion(questions[currentQuestion].id)
-                  }
-                  currentQuestion={currentQuestion}
-                  setCurrentQuestion={setCurrentQuestion}
-                />
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default CreatePage;
+export default AnimatedForm;
