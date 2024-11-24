@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import Logo from "@/components/ui/logo";
+import WordFadeIn from "@/components/ui/word-fade-in";
 
 const AnimatedForm = () => {
   const [step, setStep] = useState(1);
@@ -87,7 +89,7 @@ const AnimatedForm = () => {
         {/* Timeline Section */}
         <motion.div className="relative lg:w-96 w-full lg:flex-shrink-0">
           <motion.div
-            className="absolute left-6 lg:left-8 top-8 w-px bg-muted"
+            className="absolute left-6 lg:left-6 top-8 w-px bg-primary/20"
             initial={{ height: 0 }}
             animate={{ height: "calc(100% - 64px)" }}
             transition={{ duration: 0.8, delay: 0.5 }}
@@ -105,7 +107,7 @@ const AnimatedForm = () => {
                   ${
                     number <= step
                       ? "border-primary bg-primary text-primary-foreground"
-                      : "border-muted bg-background text-muted-foreground"
+                      : "border-primary/20 bg-white text-primary/20"
                   }`}
                 animate={{
                   scale: number === step ? [1, 1.1, 1] : 1,
@@ -141,10 +143,28 @@ const AnimatedForm = () => {
         {/* Form Section */}
         <motion.form variants={formVariants} className="flex-1 space-y-8">
           {step === 1 && (
-            <motion.div variants={itemVariants} className="space-y-6">
-              <label className="block text-xl lg:text-2xl font-medium text-foreground">
-                Name
-              </label>
+            <motion.div variants={itemVariants} className="space-y-6 relative">
+              <div className="flex items-center space-x-4">
+                <motion.div
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="w-16 h-16 text-primary"
+                >
+                  <Logo />
+                </motion.div>
+                <WordFadeIn
+                  words="Enter your Name"
+                  className="block text-xl lg:text-2xl font-medium text-foreground"
+                  delay={0.3}
+                />
+              </div>
+
               <motion.input
                 whileFocus={{ scale: 1.02 }}
                 type="text"
@@ -158,10 +178,28 @@ const AnimatedForm = () => {
           )}
 
           {step === 2 && (
-            <motion.div variants={itemVariants} className="space-y-6">
-              <label className="block text-xl lg:text-2xl font-medium text-foreground">
-                Email
-              </label>
+            <motion.div variants={itemVariants} className="space-y-6 relative">
+              <div className="flex items-center space-x-4">
+                <motion.div
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="w-16 h-16 text-primary"
+                >
+                  <Logo />
+                </motion.div>
+                <WordFadeIn
+                  words="Enter your Email"
+                  className="block text-xl lg:text-2xl font-medium text-foreground"
+                  delay={0.3}
+                />
+              </div>
+
               <motion.input
                 whileFocus={{ scale: 1.02 }}
                 type="email"
@@ -175,10 +213,28 @@ const AnimatedForm = () => {
           )}
 
           {step === 3 && (
-            <motion.div variants={itemVariants} className="space-y-6">
-              <label className="block text-xl lg:text-2xl font-medium text-foreground">
-                Message
-              </label>
+            <motion.div variants={itemVariants} className="space-y-6 relative">
+              <div className="flex items-center space-x-4">
+                <motion.div
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="w-16 h-16 text-primary"
+                >
+                  <Logo />
+                </motion.div>
+                <WordFadeIn
+                  words="Enter a Message here"
+                  className="block text-xl lg:text-2xl font-medium text-foreground"
+                  delay={0.3}
+                />
+              </div>
+
               <motion.textarea
                 whileFocus={{ scale: 1.02 }}
                 className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
