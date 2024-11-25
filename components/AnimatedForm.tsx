@@ -75,15 +75,15 @@ const animations = {
   },
   stepperVariants: {
     initial: (direction: number) => ({
-      x: direction > 0 ? 50 : -50,
+      y: direction > 0 ? 50 : -50,
       opacity: 0,
     }),
     animate: {
-      x: 0,
+      y: 0,
       opacity: 1,
     },
     exit: (direction: number) => ({
-      x: direction < 0 ? 50 : -50,
+      y: direction < 0 ? 50 : -50,
       opacity: 0,
     }),
   },
@@ -100,7 +100,6 @@ const FormStep: React.FC<{
 }> = ({ config, value, onChange, onKeyDown, inputRef, direction }) => {
   const StepComponent = config.component;
 
-  // Focus input on mount
   useEffect(() => {
     const timer = setTimeout(() => {
       if (inputRef.current) {
@@ -151,6 +150,62 @@ const FormStep: React.FC<{
   );
 };
 
+// Timeline Item Component
+const TimelineItem: React.FC<{
+  number: number;
+  title: string;
+  isActive: boolean;
+  distanceFromCenter: number;
+}> = ({ number, title, isActive, distanceFromCenter }) => {
+  // Calculate opacity based on distance from center
+  const opacity = Math.max(0, 1 - Math.abs(distanceFromCenter) * 0.4);
+
+  return (
+    <motion.div
+      className="relative flex items-center h-[180px] px-8 md:px-12"
+      style={{
+        opacity,
+        transition: "opacity 0.3s ease-out",
+      }}
+    >
+      <motion.div
+        className={`absolute left-8 md:left-6 w-16 h-16 md:w-20 md:h-20 rounded-full border-3 flex items-center justify-center text-2xl md:text-3xl
+          ${
+            isActive
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-primary bg-primary text-primary-foreground"
+          }`}
+        animate={{
+          scale: isActive ? [1, 1.1, 1] : 1,
+          transition: {
+            duration: 1,
+            repeat: isActive ? Infinity : 0,
+          },
+        }}
+      >
+        {number}
+      </motion.div>
+      <div className="ml-24 md:ml-28">
+        <h3
+          className={`text-2xl lg:text-3xl font-medium ${
+            isActive ? "text-foreground" : "text-muted-foreground"
+          }`}
+        >
+          {title}
+        </h3>
+        {isActive && (
+          <motion.div
+            className="h-1 w-24 bg-primary mt-3"
+            initial={{ width: 0 }}
+            animate={{ width: 96 }}
+            transition={{ duration: 0.5 }}
+          />
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
 // Main Form Component
 export const AnimatedForm: React.FC<{
   steps: StepConfig[];
@@ -164,12 +219,10 @@ export const AnimatedForm: React.FC<{
   });
 
   const inputRef = useRef<any>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
 
-  // Add useEffect for global keyboard events
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      console.log("Global key pressed:", e.key);
-
       if (
         e.target instanceof HTMLTextAreaElement &&
         e.key === "Enter" &&
@@ -189,16 +242,14 @@ export const AnimatedForm: React.FC<{
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [step]); // Re-attach when step changes
+  }, [step]);
 
   const handleNext = (e?: { preventDefault: () => void }) => {
-    console.log("Next triggered, current step:", step);
     e?.preventDefault();
 
     if (step < steps.length) {
       setDirection(1);
       setStep((prev) => prev + 1);
-      // Clear focus before transitioning
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
@@ -208,21 +259,16 @@ export const AnimatedForm: React.FC<{
   };
 
   const handlePrevious = () => {
-    console.log("Previous triggered, current step:", step);
     if (step > 1) {
       setDirection(-1);
       setStep((prev) => prev - 1);
-      // Clear focus before transitioning
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
     }
   };
 
-  // Keep this as a backup for form-level handling
   const handleFormKeyDown = (e: React.KeyboardEvent) => {
-    console.log("Form key pressed:", e.key, "Current step:", step);
-
     if (
       e.target instanceof HTMLTextAreaElement &&
       e.key === "Enter" &&
@@ -251,78 +297,75 @@ export const AnimatedForm: React.FC<{
 
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center bg-background p-4 sm:p-6"
+      className="h-screen overflow-hidden flex bg-background"
       initial="hidden"
       animate="visible"
       variants={animations.pageVariants}
     >
-      <div className="w-full max-w-[1800px] p-6 sm:p-8 lg:p-12 flex flex-col lg:flex-row gap-8 lg:gap-24">
-        {/* Timeline Section */}
-        <motion.div className="relative lg:w-96 w-full lg:flex-shrink-0">
+      {/* Timeline Section */}
+      <motion.div
+        className="relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden"
+        variants={animations.itemVariants}
+      >
+        {/* Timeline Container */}
+        <div className="w-full relative">
+          {/* Vertical Line */}
           <motion.div
-            className="absolute left-6 lg:left-6 top-8 w-px bg-primary/20"
-            initial={{ height: 0 }}
-            animate={{ height: "calc(100% - 64px)" }}
+            className="absolute left-16 md:left-16 bg-primary/20"
+            style={{
+              height: `${steps.length * 180}px`,
+
+              top: "50%",
+              transform: `translateY(-${(steps.length * 180) / 2}px)`,
+            }}
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           />
 
-          {steps.map(({ title }, index) => {
-            const number = index + 1;
-            return (
-              <motion.div
-                key={number}
-                className="relative flex items-center mb-20 pl-16 lg:pl-20"
-                variants={animations.itemVariants}
-                custom={index}
-              >
-                <motion.div
-                  className={`absolute left-0 w-12 h-12 rounded-full border-2 flex items-center justify-center text-lg
-                    ${
-                      number <= step
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-primary/20 bg-white text-primary/20"
-                    }`}
-                  animate={{
-                    scale: number === step ? [1, 1.1, 1] : 1,
-                    transition: {
-                      duration: 1,
-                      repeat: number === step ? Infinity : 0,
-                    },
-                  }}
-                >
-                  {number}
-                </motion.div>
-                <div className="ml-6">
-                  <h3
-                    className={`text-xl lg:text-2xl font-medium ${
-                      number <= step
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {title}
-                  </h3>
-                  {number === step && (
-                    <motion.div
-                      className="h-px w-16 bg-primary mt-2"
-                      initial={{ width: 0 }}
-                      animate={{ width: 64 }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+          {/* Timeline Items */}
+          <div
+            className="relative w-full"
+            style={{
+              transform: `translateY(${
+                (steps.length / 2 - step + 0.5) * 180
+              }px)`,
+              transition: "transform 0.5s ease-out",
+            }}
+            ref={timelineRef}
+          >
+            {steps.map(({ title }, index) => {
+              const itemStep = index + 1;
+              const distanceFromCenter = itemStep - step;
 
-        {/* Form Section */}
+              return (
+                <TimelineItem
+                  key={itemStep}
+                  number={itemStep}
+                  title={title}
+                  isActive={itemStep === step}
+                  distanceFromCenter={distanceFromCenter}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Fade Overlays */}
+        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-background to-transparent z-10" />
+        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent z-10" />
+      </motion.div>
+
+      {/* Form Section */}
+      <motion.div
+        className="flex-1 h-full flex items-center justify-center p-12"
+        variants={animations.formVariants}
+      >
         <motion.form
-          variants={animations.formVariants}
-          className="flex-1 space-y-8"
+          className="w-full max-w-3xl space-y-8"
           onSubmit={(e) => e.preventDefault()}
           onKeyDown={handleFormKeyDown}
-          tabIndex={0} // Make the form focusable
+          tabIndex={0}
         >
           <AnimatePresence mode="wait" custom={direction}>
             {currentStep && (
@@ -370,7 +413,7 @@ export const AnimatedForm: React.FC<{
             </motion.button>
           </motion.div>
         </motion.form>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
