@@ -116,9 +116,9 @@ const FormStep: React.FC<{
       exit="exit"
       variants={animations.stepperVariants}
       custom={direction}
-      className="space-y-6 relative"
+      className="space-y-6 relative w-full px-4 md:px-8"
     >
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 justify-start w-full">
         <motion.div
           animate={{
             y: [0, -10, 0],
@@ -128,24 +128,26 @@ const FormStep: React.FC<{
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="w-16 h-16 text-primary"
+          className="w-20 h-20 md:w-24 md:h-24 text-primary"
         >
           <Logo />
         </motion.div>
         <WordFadeIn
           words={config.title}
-          className="block text-xl lg:text-2xl font-medium text-foreground"
+          className="block text-2xl md:text-4xl font-medium text-foreground"
           delay={0.3}
         />
       </div>
 
-      <StepComponent
-        value={value}
-        onChange={onChange}
-        onKeyDown={onKeyDown}
-        inputRef={inputRef}
-        autoFocus
-      />
+      <div className="w-full">
+        <StepComponent
+          value={value}
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          inputRef={inputRef}
+          autoFocus
+        />
+      </div>
     </motion.div>
   );
 };
@@ -304,7 +306,7 @@ export const AnimatedForm: React.FC<{
     >
       {/* Timeline Section */}
       <motion.div
-        className="relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden"
+        className="relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden md:flex hidden"
         variants={animations.itemVariants}
       >
         {/* Timeline Container */}
@@ -352,38 +354,35 @@ export const AnimatedForm: React.FC<{
         </div>
 
         {/* Fade Overlays */}
-        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-background to-transparent z-10" />
-        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent z-10" />
+        <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-background to-transparent z-10" />
+        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent z-10" />
       </motion.div>
 
       {/* Form Section */}
       <motion.div
-        className="flex-1 h-full flex items-center justify-center p-12"
+        className="flex-1 h-full w-full flex items-center justify-center p-8 md:p-16"
         variants={animations.formVariants}
       >
         <motion.form
-          className="w-full max-w-3xl space-y-8"
+          className="w-full max-w-full space-y-8 px-4 md:px-8"
           onSubmit={(e) => e.preventDefault()}
           onKeyDown={handleFormKeyDown}
-          tabIndex={0}
         >
           <AnimatePresence mode="wait" custom={direction}>
-            {currentStep && (
-              <FormStep
-                key={step}
-                config={currentStep}
-                value={formData[currentStep.key] || ""}
-                onChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    [currentStep.key]: value,
-                  }))
-                }
-                onKeyDown={handleFormKeyDown}
-                inputRef={inputRef}
-                direction={direction}
-              />
-            )}
+            <FormStep
+              key={step}
+              config={steps[step - 1]}
+              value={formData[steps[step - 1].key]}
+              onChange={(value) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  [steps[step - 1].key]: value,
+                }));
+              }}
+              onKeyDown={handleFormKeyDown}
+              inputRef={inputRef}
+              direction={direction}
+            />
           </AnimatePresence>
 
           <motion.div
