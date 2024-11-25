@@ -3,39 +3,33 @@ import { createClient } from "@/lib/supabase";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { StepComponentProps } from "./AnimatedForm";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Edit } from "lucide-react";
 
-// Define an interface for formData
-interface FormData {
-  professionalTitle: string;
-  workFocus: string;
-  pronouns: string;
-  expertise: string[];
-  learningGoals: string;
-  expertiseTopics: string[];
-  helpTopics: string[];
-  collaborationInterests: string;
-  availability: string;
-  timeZone: string;
-  languages: string[];
-  funFacts: string;
-  theme: {
-    mode: string;
-    layout: string;
-  };
-  stats: {
-    selectedStats: string[];
-  };
+// Interface for section items
+interface SectionItem {
+  label: string;
+  value: any;
+  isArray?: boolean;
+  step?: number;
+}
+
+// Interface for sections
+interface Section {
+  title: string;
+  items: SectionItem[];
 }
 
 const ProfileReview = ({
   value,
   formData,
-}: StepComponentProps & { formData?: any }) => {
+  onStepChange,
+}: StepComponentProps & {
+  formData?: any;
+  onStepChange?: (step: number) => void;
+}) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -56,37 +50,38 @@ const ProfileReview = ({
     router.push("/preview");
   };
 
+  const handleEdit = (step: number) => {
+    if (onStepChange) {
+      onStepChange(step);
+    }
+  };
+
   if (loading) {
     return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Loading profile...</CardTitle>
-        </CardHeader>
+      <Card className="w-full h-full flex items-center justify-center">
+        <CardContent>Loading profile...</CardContent>
       </Card>
     );
   }
 
   if (!user) {
     return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Please log in to view profile</CardTitle>
-        </CardHeader>
+      <Card className="w-full h-full flex items-center justify-center">
+        <CardContent>Please log in to view profile</CardContent>
       </Card>
     );
   }
 
-  // Use formData if available, otherwise fall back to value
   const data = formData || value || {};
 
-  const sections = [
+  const sections: Section[] = [
     {
       title: "Basic Information",
       items: [
-        { label: "Email", value: user.email },
-        { label: "Professional Title", value: data.professionalTitle },
-        { label: "Current Work Focus", value: data.workFocus },
-        { label: "Pronouns", value: data.pronouns },
+        { label: "Email", value: user.email, step: 0 },
+        { label: "Professional Title", value: data.professionalTitle, step: 0 },
+        { label: "Current Work Focus", value: data.workFocus, step: 1 },
+        { label: "Pronouns", value: data.pronouns, step: 8 },
       ],
     },
     {
@@ -96,61 +91,127 @@ const ProfileReview = ({
           label: "Areas of Expertise",
           value: data.expertise,
           isArray: true,
+          step: 2,
         },
-        { label: "Learning Goals", value: data.learningGoals },
+        { label: "Learning Goals", value: data.learningGoals, step: 3 },
         {
           label: "Topics I Can Help With",
           value: data.expertiseTopics,
           isArray: true,
+          step: 6,
         },
         {
           label: "Topics I Need Help With",
           value: data.helpTopics,
           isArray: true,
+          step: 5,
         },
       ],
     },
     {
-      title: "Collaboration",
+      title: "Collaboration & Personal",
       items: [
         {
           label: "Collaboration Interests",
           value: data.collaborationInterests,
+          step: 4,
         },
-        { label: "Availability", value: data.availability },
-        { label: "Time Zone", value: data.timeZone },
+        { label: "Availability", value: data.availability, step: 11 },
+        { label: "Time Zone", value: data.timeZone, step: 10 },
         {
           label: "Languages",
           value: data.languages,
           isArray: true,
+          step: 9,
         },
-      ],
-    },
-    {
-      title: "Personal",
-      items: [{ label: "Fun Facts", value: data.funFacts }],
-    },
-    {
-      title: "Preferences",
-      items: [
-        { label: "Theme Mode", value: data.theme?.mode },
-        { label: "Layout Preference", value: data.theme?.layout },
+        { label: "Fun Facts", value: data.funFacts, step: 7 },
+        { label: "Theme Mode", value: data.theme?.mode, step: 12 },
         {
           label: "Selected Stats",
           value: data.stats?.selectedStats,
           isArray: true,
+          step: 13,
         },
       ],
     },
   ];
 
+  const InfoCard = ({
+    title,
+    items,
+    columnClass,
+  }: {
+    title: string;
+    items: SectionItem[];
+    columnClass: string;
+  }) => (
+    <Card className={`${columnClass} h-full`}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle className="text-xl font-semibold">{title}</CardTitle>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleEdit(items[0].step || 0)}
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {items.map((item, index) => (
+          <div key={item.label} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                {item.label}
+              </span>
+              {item.step !== items[0].step && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => handleEdit(item.step || 0)}
+                >
+                  <Edit className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+            {item.isArray ? (
+              <div className="flex flex-wrap gap-2">
+                {Array.isArray(item.value) && item.value.length > 0 ? (
+                  item.value.map((v: string, i: number) => (
+                    <Badge
+                      key={`${v}-${i}`}
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      {v}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    Not specified
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="text-sm">
+                {item.value || (
+                  <span className="text-muted-foreground">Not specified</span>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <div className="w-full max-h-[calc(100vh-200px)] flex flex-col gap-4">
-      {/* Profile Header Card */}
-      <Card>
+    <div className="w-full h-full flex flex-col space-y-4 p-4">
+      {/* Profile Header */}
+      {/* <Card className="w-full">
         <CardContent className="pt-6">
           <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
+            <Avatar className="h-16 w-16">
               <AvatarImage src={user.user_metadata?.avatar_url} />
               <AvatarFallback>
                 {data.professionalTitle?.[0] || user.email?.[0]?.toUpperCase()}
@@ -164,59 +225,26 @@ const ProfileReview = ({
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      {/* Scrollable Content Area */}
-      <ScrollArea className="flex-1 w-full">
-        <div className="space-y-4 pr-4">
-          {sections.map((section, index) => (
-            <Card key={section.title}>
-              <CardHeader>
-                <CardTitle className="text-xl">{section.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {section.items.map((item, itemIndex) => (
-                    <div key={item.label} className="space-y-2">
-                      <div className="font-medium text-sm text-muted-foreground">
-                        {item.label}
-                      </div>
-                      {item.isArray ? (
-                        <div className="flex flex-wrap gap-2">
-                          {Array.isArray(item.value) &&
-                            item.value.map((v: string, i: number) => (
-                              <Badge
-                                key={`${v}-${i}`}
-                                variant="secondary"
-                                className="text-sm"
-                              >
-                                {v}
-                              </Badge>
-                            ))}
-                        </div>
-                      ) : (
-                        <div className="text-sm">
-                          {item.value || "Not specified"}
-                        </div>
-                      )}
-                      {itemIndex < section.items.length - 1 && (
-                        <Separator className="my-4" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
+      {/* Three Column Grid */}
+      <div className="grid grid-cols-3 gap-4 flex-1">
+        {sections.map((section, index) => (
+          <InfoCard
+            key={section.title}
+            title={section.title}
+            items={section.items}
+            columnClass="col-span-1"
+          />
+        ))}
+      </div>
 
       {/* Generate Profile Button */}
-      <div className="mt-4 flex justify-end">
+      <div className="flex justify-end pt-4">
         <Button
+          size="lg"
           onClick={handleGenerateProfile}
           className="w-full sm:w-auto"
-          size="lg"
         >
           Generate Profile
         </Button>
