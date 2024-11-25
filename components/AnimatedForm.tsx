@@ -306,25 +306,11 @@ export const AnimatedForm: React.FC<{
     >
       {/* Timeline Section */}
       <motion.div
-        className="relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden md:flex hidden"
+        className=" relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden md:flex hidden"
         variants={animations.itemVariants}
       >
         {/* Timeline Container */}
-        <div className="w-full relative">
-          {/* Vertical Line */}
-          <motion.div
-            className="absolute left-16 md:left-16 bg-primary/20"
-            style={{
-              height: `${steps.length * 180}px`,
-
-              top: "50%",
-              transform: `translateY(-${(steps.length * 180) / 2}px)`,
-            }}
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          />
-
+        <div className="w-full relative py-60">
           {/* Timeline Items */}
           <div
             className="relative w-full"
@@ -354,8 +340,33 @@ export const AnimatedForm: React.FC<{
         </div>
 
         {/* Fade Overlays */}
-        <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-background to-transparent z-10" />
-        <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-background to-transparent z-10" />
+        {/* Fade Overlays with enhanced gradients */}
+        <div
+          className="absolute top-0 left-0 w-full h-32 z-10"
+          style={{
+            background: `linear-gradient(
+      to bottom,
+      var(--background) 0%,
+      var(--background) 25%,
+      rgba(var(--background-rgb), 0.9) 50%,
+      rgba(var(--background-rgb), 0.5) 75%,
+      transparent 100%
+    )`,
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-full h-32 z-10"
+          style={{
+            background: `linear-gradient(
+      to top,
+      var(--background) 0%,
+      var(--background) 25%,
+      rgba(var(--background-rgb), 0.9) 50%,
+      rgba(var(--background-rgb), 0.5) 75%,
+      transparent 100%
+    )`,
+          }}
+        />
       </motion.div>
 
       {/* Form Section */}
@@ -389,7 +400,7 @@ export const AnimatedForm: React.FC<{
             className="flex justify-end gap-6 mt-12"
             variants={animations.itemVariants}
           >
-            {step > 1 && (
+            {step > 1 && step < steps.length && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
@@ -401,15 +412,17 @@ export const AnimatedForm: React.FC<{
               </motion.button>
             )}
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleNext}
-              className="px-8 py-4 text-lg lg:text-xl bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              type="button"
-            >
-              {step === steps.length ? "Submit" : "Next"}
-            </motion.button>
+            {step < steps.length && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleNext}
+                className="px-8 py-4 text-lg lg:text-xl bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                type="button"
+              >
+                {step === steps.length ? "Submit" : "Next"}
+              </motion.button>
+            )}
           </motion.div>
         </motion.form>
       </motion.div>

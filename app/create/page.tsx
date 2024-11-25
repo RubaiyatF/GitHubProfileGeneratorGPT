@@ -7,6 +7,7 @@ import { ColorPicker } from "@/components/ui/color-picker";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import ProfileReview from "@/components/ProfileReview";
 
 interface StepComponentProps {
   value: any;
@@ -409,7 +410,13 @@ const steps = [
   {
     title: "Stats Configuration",
     key: "stats",
-    component: StatsConfigInput,
+    component: AvailabilityInput,
+  },
+
+  {
+    title: "Review your profile information",
+    key: "review",
+    component: ProfileReview,
   },
 ];
 
