@@ -15,7 +15,8 @@ export default function PreviewPage() {
   const [formData, setFormData] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [content] = useState("");
+  const [content, setContent] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
@@ -48,6 +49,69 @@ export default function PreviewPage() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading && formData && user && !content && !isGenerating) {
+      generateProfile();
+    }
+  }, [isLoading, formData, user]);
+
+  const handleDownload = () => {
+    // Create a blob from the content
+    const blob = new Blob([content], { type: "text/markdown" });
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a temporary anchor element and trigger download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "README.md";
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
+  const generateProfile = async () => {
+    setIsGenerating(true);
+    setContent(""); // Reset content before generating new profile
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formData,
+          user,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate profile");
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const text = decoder.decode(value);
+          setContent((prev) => prev + text);
+        }
+      }
+    } catch (error) {
+      console.error("Error generating profile:", error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleEdit = () => {
     router.push("/create?step=15");
   };
@@ -61,31 +125,57 @@ export default function PreviewPage() {
   }
 
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
-      {/* Centered Safari Component */}
-      <div className="w-full max-w-[1400px] px-8">
+    <div className="w-screen h-screen flex flex-col items-center justify-center bg-background">
+      {/* Title */}
+      <h1 className="text-3xl font-bold mb-8">Preview Your GitHub Profile</h1>
+
+      {/* Main Content Area */}
+      <div className="w-full max-w-[1400px] px-8 flex-grow relative">
         <Safari
           url="github.com"
           content={content}
-          className="w-full h-full"
+          className="w-full h-[calc(100vh-200px)]"
           remarkPlugins={[remarkGfm]}
         />
       </div>
 
       {/* Fixed Overlay Card */}
       <div className="fixed bottom-6 right-6 animate-slide-up">
-        <div className="w-[280px] flex flex-col items-center justify-center gap-8 p-6 bg-card rounded-lg shadow-lg">
+        <Card className="w-[280px] flex flex-col items-center justify-center gap-8 p-6">
           <div className="flex flex-col items-center space-y-6">
             <div className="w-24 h-24 aspect-square">
               <AnimatedCatLogo />
             </div>
             <p className="text-center text-sm text-muted-foreground">
-              Like the design? Click the following button to download your
-              profile.
+              {isGenerating
+                ? "Generating your profile..."
+                : content
+                ? "Like the design? Click the following button to download your profile."
+                : "Click generate to create your GitHub profile"}
             </p>
           </div>
           <div className="w-full space-y-3">
-            <RainbowButton className="w-full">Download</RainbowButton>
+            {content ? (
+              <RainbowButton className="w-full" onClick={handleDownload}>
+                Download README.md
+              </RainbowButton>
+            ) : (
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={generateProfile}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Profile"
+                )}
+              </Button>
+            )}
             <Button
               variant="outline"
               className="w-full"
@@ -95,7 +185,7 @@ export default function PreviewPage() {
               Edit Profile
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
