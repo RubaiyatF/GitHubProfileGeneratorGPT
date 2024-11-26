@@ -5,10 +5,13 @@ import { motion } from "framer-motion";
 
 const AnimatedCatLogo = () => {
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleGlobalMouseMove = (event) => {
+    const handleGlobalMouseMove = (event: {
+      clientX: number;
+      clientY: number;
+    }) => {
       const container = containerRef.current;
       if (!container) return;
 
@@ -38,7 +41,7 @@ const AnimatedCatLogo = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-[600px] h-[600px] flex items-center justify-center bg-background"
+      className="relative w-full h-full flex items-center justify-center bg-background"
     >
       <motion.svg
         xmlns="http://www.w3.org/2000/svg"

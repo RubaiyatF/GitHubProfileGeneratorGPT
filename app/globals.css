@@ -44,7 +44,14 @@ body {
     --color-3: 210 100% 63%;
     --color-4: 195 100% 63%;
     --color-5: 90 100% 63%;
+    /* GitHub Light Theme Variables */
+    --markdown-bg: #ffffff;
+    --markdown-code-bg: #f6f8fa;
+    --markdown-border: #d0d7de;
+    --markdown-text: #1f2328;
+    --markdown-link: #0969da;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -75,6 +82,12 @@ body {
     --color-3: 210 100% 63%;
     --color-4: 195 100% 63%;
     --color-5: 90 100% 63%;
+    /* GitHub Dark Theme Variables */
+    --markdown-bg: #0d1117;
+    --markdown-code-bg: #161b22;
+    --markdown-border: #30363d;
+    --markdown-text: #e6edf3;
+    --markdown-link: #58a6ff;
   }
 }
 
@@ -85,4 +98,211 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+@import "github-markdown-css/github-markdown.css";
+
+/* Base GitHub Markdown Overrides */
+.markdown-body {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 24px 48px !important;
+  color: var(--markdown-text) !important;
+  background-color: var(--markdown-bg) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji" !important;
+}
+
+/* Override markdown body background */
+.markdown-body {
+  background-color: var(--markdown-bg) !important;
+}
+
+.markdown-body.w-full {
+  background-color: var(--markdown-bg) !important;
+}
+
+/* Reset background colors for specific elements */
+.markdown-body > *:not(pre):not(code):not(blockquote):not(table) {
+  background-color: transparent !important;
+}
+
+/* Ensure proper background for code blocks */
+.markdown-body pre,
+.markdown-body code {
+  background-color: var(--markdown-code-bg) !important;
+}
+
+/* Table backgrounds */
+.markdown-body table tr {
+  background-color: var(--markdown-bg) !important;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: var(--markdown-code-bg) !important;
+}
+
+/* Headings */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  color: var(--markdown-text) !important;
+  border-bottom-color: var(--markdown-border) !important;
+  margin-bottom: 16px !important;
+  font-weight: 600 !important;
+}
+
+/* Code Blocks */
+.markdown-body pre {
+  width: 100% !important;
+  max-width: none !important;
+  border: 1px solid var(--markdown-border) !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+  overflow-x: auto !important;
+  font-size: 85% !important;
+  line-height: 1.45 !important;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace !important;
+  font-size: 85% !important;
+  padding: 0.2em 0.4em !important;
+  border-radius: 6px !important;
+}
+
+.markdown-body pre code {
+  background-color: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  font-size: 100% !important;
+}
+
+/* Links */
+.markdown-body a {
+  color: var(--markdown-link) !important;
+  text-decoration: none !important;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline !important;
+}
+
+/* Tables */
+.markdown-body table {
+  width: 100% !important;
+  max-width: none !important;
+  display: table !important;
+  border-spacing: 0 !important;
+  border-collapse: collapse !important;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px !important;
+  border: 1px solid var(--markdown-border) !important;
+}
+
+/* Lists */
+.markdown-body ul,
+.markdown-body ol {
+  width: 100% !important;
+  max-width: none !important;
+  padding-left: 2em !important;
+  margin-bottom: 16px !important;
+}
+
+/* Blockquotes */
+.markdown-body blockquote {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 1em !important;
+  color: var(--markdown-text) !important;
+  opacity: 0.8;
+  border-left: 0.25em solid var(--markdown-border) !important;
+  margin: 0 0 16px 0 !important;
+}
+
+/* Images */
+.markdown-body img {
+  max-width: 100% !important;
+  height: auto !important;
+  background-color: var(--markdown-bg) !important;
+  border-radius: 6px !important;
+}
+
+/* Horizontal Rules */
+.markdown-body hr {
+  height: 0.25em !important;
+  padding: 0 !important;
+  margin: 24px 0 !important;
+  background-color: var(--markdown-border) !important;
+  border: 0 !important;
+}
+
+/* Code Stats Section */
+.markdown-body pre.text {
+  width: 100% !important;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace !important;
+  white-space: pre !important;
+}
+
+/* Ensure proper spacing */
+.markdown-body > *:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Element spacing */
+.markdown-body p,
+.markdown-body dl,
+.markdown-body blockquote,
+.markdown-body pre,
+.markdown-body table {
+  margin-bottom: 16px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .markdown-body {
+    padding: 16px 24px !important;
+  }
+}
+
+/* Additional markdown body styles */
+.markdown-body > * {
+  background-color: transparent !important;
+}
+
+/* Additional code block styles */
+.markdown-body pre,
+.markdown-body code,
+.markdown-body blockquote,
+.markdown-body table tr {
+  background-color: var(--markdown-code-bg) !important;
 }

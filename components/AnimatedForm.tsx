@@ -10,6 +10,8 @@ export interface StepComponentProps {
   onChange: (value: any) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   inputRef: React.RefObject<any>;
+  formData: FormData;
+  onStepChange: (step: number) => void;
   autoFocus?: boolean;
 }
 
@@ -96,8 +98,19 @@ const FormStep: React.FC<{
   onChange: (value: any) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   inputRef: React.RefObject<any>;
+  formData: FormData;
+  onStepChange: (step: number) => void;
   direction: number;
-}> = ({ config, value, onChange, onKeyDown, inputRef, direction }) => {
+}> = ({
+  config,
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+  formData,
+  onStepChange,
+  direction,
+}) => {
   const StepComponent = config.component;
 
   useEffect(() => {
@@ -145,6 +158,8 @@ const FormStep: React.FC<{
           onChange={onChange}
           onKeyDown={onKeyDown}
           inputRef={inputRef}
+          formData={formData}
+          onStepChange={onStepChange}
           autoFocus
         />
       </div>
@@ -382,16 +397,15 @@ export const AnimatedForm: React.FC<{
           <AnimatePresence mode="wait" custom={direction}>
             <FormStep
               key={step}
-              config={steps[step - 1]}
-              value={formData[steps[step - 1].key]}
-              onChange={(value) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  [steps[step - 1].key]: value,
-                }));
-              }}
+              config={currentStep}
+              value={formData[currentStep.key]}
+              onChange={(value) =>
+                setFormData((prev) => ({ ...prev, [currentStep.key]: value }))
+              }
               onKeyDown={handleFormKeyDown}
               inputRef={inputRef}
+              formData={formData}
+              onStepChange={setStep}
               direction={direction}
             />
           </AnimatePresence>

@@ -8,6 +8,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import ProfileReview from "@/components/ProfileReview";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface StepComponentProps {
   value: any;
@@ -309,36 +310,129 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="space-y-6">
-    <MultiSelect
-      ref={inputRef}
-      value={value?.selectedStats || []}
-      onChange={(selectedStats) => onChange({ ...value, selectedStats })}
-      onKeyDown={onKeyDown}
-      options={[
-        "Overall Stats",
-        "Top Languages",
-        "Streak Stats",
-        "Contribution Graph",
-        "Trophy Showcase",
-        "Activity Graph",
-      ]}
-      placeholder="Select stats to display"
-      className="w-full"
-    />
-    <div className="space-y-2">
-      <Label>Graph Height</Label>
-      <Slider
-        value={value?.graphHeight || 200}
-        onValueChange={(graphHeight) => onChange({ ...value, graphHeight })}
-        min={100}
-        max={300}
-        step={10}
-      />
+}) => {
+  const columnSections = [
+    // Column 1: Stats Selection
+    {
+      sections: [
+        {
+          title: "Stats Selection",
+          items: [
+            {
+              label: "GitHub Stats",
+              value: value?.selectedStats || [],
+              isArray: true,
+              isMultiSelect: true,
+            },
+          ],
+        },
+      ],
+    },
+    // Column 2: Graph Configuration
+    {
+      sections: [
+        {
+          title: "Graph Configuration",
+          items: [
+            {
+              label: "Graph Height",
+              value: value?.graphHeight || 200,
+              isSlider: true,
+            },
+          ],
+        },
+      ],
+    },
+    // Column 3: Preview
+    {
+      sections: [
+        {
+          title: "Preview",
+          items: [
+            {
+              label: "Selected Stats",
+              value: "Your GitHub stats will be displayed here",
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  return (
+    <div className="w-full h-full">
+      <div className="grid grid-cols-3 gap-6">
+        {columnSections.map((column, columnIndex) => (
+          <Card key={columnIndex} className="h-fit">
+            <CardContent className="p-6 space-y-6">
+              {column.sections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="space-y-4">
+                  <h3 className="text-xl font-bold">{section.title}</h3>
+                  <div className="space-y-4">
+                    {section.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {item.label}
+                          </span>
+                        </div>
+                        <div className="text-sm">
+                          {item.isMultiSelect ? (
+                            <MultiSelect
+                              ref={inputRef}
+                              value={value?.selectedStats || []}
+                              onChange={(selectedStats) =>
+                                onChange({ ...value, selectedStats })
+                              }
+                              onKeyDown={onKeyDown}
+                              options={[
+                                "Overall Stats",
+                                "Top Languages",
+                                "Streak Stats",
+                                "Contribution Graph",
+                                "Trophy Showcase",
+                                "Activity Graph",
+                              ]}
+                              placeholder="Select stats to display"
+                              className="w-full"
+                            />
+                          ) : item.isSlider ? (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm text-muted-foreground">
+                                  {value?.graphHeight || 200}px
+                                </span>
+                              </div>
+                              <Slider
+                                value={[value?.graphHeight || 200]}
+                                onValueChange={(values) =>
+                                  onChange({ ...value, graphHeight: values[0] })
+                                }
+                                min={100}
+                                max={300}
+                                step={10}
+                              />
+                            </div>
+                          ) : (
+                            <p className="text-foreground">
+                              {typeof item.value === "string"
+                                ? item.value
+                                : "Not set"}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Define all steps
 const steps = [
@@ -410,7 +504,7 @@ const steps = [
   {
     title: "Stats Configuration",
     key: "stats",
-    component: AvailabilityInput,
+    component: StatsConfigInput,
   },
 
   {
@@ -423,7 +517,6 @@ const steps = [
 export default function CreatePage() {
   const handleSubmit = async (formData: any) => {
     console.log("Form submitted:", formData);
-    // Handle form submission and profile generation here
   };
 
   return (

@@ -26,10 +26,9 @@ const ProfileReview = ({
   value,
   formData,
   onStepChange,
-}: StepComponentProps & {
-  formData?: any;
-  onStepChange?: (step: number) => void;
-}) => {
+  onKeyDown,
+  inputRef,
+}: StepComponentProps) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -46,205 +45,174 @@ const ProfileReview = ({
     getUser();
   }, []);
 
-  const handleGenerateProfile = () => {
-    router.push("/preview");
-  };
-
-  const handleEdit = (step: number) => {
-    if (onStepChange) {
-      onStepChange(step);
+  const renderValue = (value: any) => {
+    if (!value) return "Not set";
+    if (Array.isArray(value)) {
+      return (
+        <div className="flex flex-wrap gap-2">
+          {value.map((v: string, i: number) => (
+            <Badge key={i} variant="secondary">
+              {v}
+            </Badge>
+          ))}
+        </div>
+      );
     }
+    if (typeof value === "object") {
+      return (
+        <div className="space-y-1">
+          {Object.entries(value).map(([key, val]) => (
+            <div key={key} className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground capitalize">
+                {key}:
+              </span>
+              <span className="text-sm">{String(val)}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return value;
   };
 
-  if (loading) {
-    return (
-      <Card className="w-full h-full flex items-center justify-center">
-        <CardContent>Loading profile...</CardContent>
-      </Card>
-    );
-  }
-
-  if (!user) {
-    return (
-      <Card className="w-full h-full flex items-center justify-center">
-        <CardContent>Please log in to view profile</CardContent>
-      </Card>
-    );
-  }
-
-  const data = formData || value || {};
-
-  const sections: Section[] = [
+  const columnSections = [
+    // Column 1: Basic Info and Learning & Growth
     {
-      title: "Basic Information",
-      items: [
-        { label: "Email", value: user.email, step: 0 },
-        { label: "Professional Title", value: data.professionalTitle, step: 0 },
-        { label: "Current Work Focus", value: data.workFocus, step: 1 },
-        { label: "Pronouns", value: data.pronouns, step: 8 },
-      ],
-    },
-    {
-      title: "Skills & Expertise",
-      items: [
+      sections: [
         {
-          label: "Areas of Expertise",
-          value: data.expertise,
-          isArray: true,
-          step: 2,
-        },
-        { label: "Learning Goals", value: data.learningGoals, step: 3 },
-        {
-          label: "Topics I Can Help With",
-          value: data.expertiseTopics,
-          isArray: true,
-          step: 6,
+          title: "Basic Information",
+          items: [
+            { label: "Professional Title", value: formData?.title, step: 1 },
+            { label: "Work Focus", value: formData?.workFocus, step: 2 },
+            {
+              label: "Expertise",
+              value: formData?.expertise,
+              isArray: true,
+              step: 3,
+            },
+          ],
         },
         {
-          label: "Topics I Need Help With",
-          value: data.helpTopics,
-          isArray: true,
-          step: 5,
+          title: "Learning & Growth",
+          items: [
+            {
+              label: "Learning Goals",
+              value: formData?.learningGoals,
+              step: 4,
+            },
+            {
+              label: "Collaboration Interests",
+              value: formData?.collaborationInterests,
+              step: 5,
+            },
+          ],
         },
       ],
     },
+    // Column 2: Community Engagement and part of Personal Details
     {
-      title: "Collaboration & Personal",
-      items: [
+      sections: [
         {
-          label: "Collaboration Interests",
-          value: data.collaborationInterests,
-          step: 4,
+          title: "Community Engagement",
+          items: [
+            {
+              label: "Help Topics",
+              value: formData?.helpTopics,
+              isArray: true,
+              step: 6,
+            },
+            {
+              label: "Expertise Topics",
+              value: formData?.expertiseTopics,
+              isArray: true,
+              step: 7,
+            },
+          ],
         },
-        { label: "Availability", value: data.availability, step: 11 },
-        { label: "Time Zone", value: data.timeZone, step: 10 },
         {
-          label: "Languages",
-          value: data.languages,
-          isArray: true,
-          step: 9,
+          title: "Personal Details (Part 1)",
+          items: [
+            { label: "Fun Facts", value: formData?.funFacts, step: 8 },
+            { label: "Pronouns", value: formData?.pronouns, step: 9 },
+            {
+              label: "Languages",
+              value: formData?.languages,
+              isArray: true,
+              step: 10,
+            },
+          ],
         },
-        { label: "Fun Facts", value: data.funFacts, step: 7 },
-        { label: "Theme Mode", value: data.theme?.mode, step: 12 },
+      ],
+    },
+    // Column 3: Rest of Personal Details and Customization
+    {
+      sections: [
         {
-          label: "Selected Stats",
-          value: data.stats?.selectedStats,
-          isArray: true,
-          step: 13,
+          title: "Personal Details (Part 2)",
+          items: [
+            { label: "Time Zone", value: formData?.timezone, step: 11 },
+            { label: "Availability", value: formData?.availability, step: 12 },
+          ],
+        },
+        {
+          title: "Customization",
+          items: [
+            { label: "Theme", value: formData?.theme, step: 13 },
+            { label: "Stats", value: formData?.stats, step: 14 },
+          ],
         },
       ],
     },
   ];
 
-  const InfoCard = ({
-    title,
-    items,
-    columnClass,
-  }: {
-    title: string;
-    items: SectionItem[];
-    columnClass: string;
-  }) => (
-    <Card className={`${columnClass} h-full`}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-xl font-semibold">{title}</CardTitle>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleEdit(items[0].step || 0)}
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {items.map((item, index) => (
-          <div key={item.label} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">
-                {item.label}
-              </span>
-              {item.step !== items[0].step && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => handleEdit(item.step || 0)}
-                >
-                  <Edit className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-            {item.isArray ? (
-              <div className="flex flex-wrap gap-2">
-                {Array.isArray(item.value) && item.value.length > 0 ? (
-                  item.value.map((v: string, i: number) => (
-                    <Badge
-                      key={`${v}-${i}`}
-                      variant="secondary"
-                      className="text-xs"
-                    >
-                      {v}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    Not specified
-                  </span>
-                )}
-              </div>
-            ) : (
-              <div className="text-sm">
-                {item.value || (
-                  <span className="text-muted-foreground">Not specified</span>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-
   return (
-    <div className="w-full h-full flex flex-col space-y-4 p-4">
-      {/* Profile Header */}
-      {/* <Card className="w-full">
-        <CardContent className="pt-6">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={user.user_metadata?.avatar_url} />
-              <AvatarFallback>
-                {data.professionalTitle?.[0] || user.email?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="text-2xl font-bold">
-                {user.user_metadata?.full_name || user.email}
-              </h2>
-              <p className="text-muted-foreground">{data.professionalTitle}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card> */}
-
-      {/* Three Column Grid */}
-      <div className="grid grid-cols-3 gap-4 flex-1">
-        {sections.map((section, index) => (
-          <InfoCard
-            key={section.title}
-            title={section.title}
-            items={section.items}
-            columnClass="col-span-1"
-          />
+    <div className="w-full space-y-6">
+      <div className="grid grid-cols-3 gap-6">
+        {columnSections.map((column, columnIndex) => (
+          <Card key={columnIndex} className="h-fit">
+            <CardContent className="p-6 space-y-6">
+              {column.sections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="space-y-4">
+                  <h3 className="text-xl font-bold">{section.title}</h3>
+                  <div className="space-y-4">
+                    {section.items.map((item, itemIndex) => (
+                      <div key={itemIndex} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {item.label}
+                          </span>
+                          {item.step && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onStepChange?.(item.step ?? 0)}
+                              className="h-8 px-2"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="text-sm">
+                          {item.isArray
+                            ? renderValue(item.value)
+                            : renderValue(item.value)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         ))}
       </div>
-
-      {/* Generate Profile Button */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-end">
         <Button
+          onClick={() => {
+            localStorage.setItem("profileData", JSON.stringify(formData));
+            router.push("/preview");
+          }}
           size="lg"
-          onClick={handleGenerateProfile}
-          className="w-full sm:w-auto"
         >
           Generate Profile
         </Button>
