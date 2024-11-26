@@ -135,26 +135,50 @@ export default function Safari({
             {...(props as DivProps)}
             className="w-full h-full overflow-y-auto bg-white dark:bg-[#0D1117] text-black dark:text-white"
           >
-            <div className="markdown-body w-full h-full dark:text-white">
-              <ReactMarkdown
-                remarkPlugins={remarkPlugins}
-                rehypePlugins={[rehypeRaw]}
-                components={{
-                  pre: ({ node, ...props }) => (
-                    <pre
-                      {...props}
-                      className="bg-[#f6f8fa] dark:bg-[#161B22] rounded-md p-4 overflow-x-auto"
-                    />
-                  ),
-                  code: ({
-                    node,
-                    inline,
-                    className,
-                    children,
-                    ...props
-                  }: any) => {
-                    if (inline) {
-                      return (
+            {showMarkdown ? (
+              // Raw Markdown View
+              <div className="p-8 font-mono">
+                <pre className="whitespace-pre-wrap break-words text-sm">
+                  <code>
+                    {content.replace(/^[`']{3}markdown\n|\n[`']{3}$/g, "")}
+                  </code>
+                </pre>
+              </div>
+            ) : (
+              // GitHub Preview
+              <div className="markdown-body w-full h-full p-8 prose dark:prose-invert max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  className="text-base"
+                  components={{
+                    pre: ({ node, children, ...props }) => (
+                      <pre
+                        {...props}
+                        className="bg-[#f6f8fa] dark:bg-[#161B22] rounded-md p-4 overflow-x-auto"
+                      >
+                        {children}
+                      </pre>
+                    ),
+                    code: ({
+                      node,
+                      inline,
+                      className,
+                      children,
+                      ...props
+                    }: any) => {
+                      const match = /language-(\w+)/.exec(className || "");
+                      return !inline ? (
+                        <code
+                          className={cn(
+                            match ? `language-${match[1]}` : "",
+                            "text-black dark:text-white block"
+                          )}
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      ) : (
                         <code
                           className="bg-[#f6f8fa] dark:bg-[#161B22] px-1 py-0.5 rounded-md text-sm text-black dark:text-white"
                           {...props}
@@ -162,22 +186,81 @@ export default function Safari({
                           {children}
                         </code>
                       );
-                    }
-                    return (
-                      <code
-                        className={cn(className, "text-black dark:text-white")}
+                    },
+                    h1: ({ node, ...props }) => (
+                      <h1
                         {...props}
-                      >
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-                className="text-black dark:text-white"
-              >
-                {content}
-              </ReactMarkdown>
-            </div>
+                        className="text-2xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
+                      />
+                    ),
+                    h2: ({ node, ...props }) => (
+                      <h2
+                        {...props}
+                        className="text-xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
+                      />
+                    ),
+                    h3: ({ node, ...props }) => (
+                      <h3 {...props} className="text-lg font-bold mb-4 mt-6" />
+                    ),
+                    p: ({ node, ...props }) => (
+                      <p {...props} className="mb-4 leading-relaxed" />
+                    ),
+                    ul: ({ node, ...props }) => (
+                      <ul {...props} className="list-disc pl-6 mb-4" />
+                    ),
+                    ol: ({ node, ...props }) => (
+                      <ol {...props} className="list-decimal pl-6 mb-4" />
+                    ),
+                    li: ({ node, ...props }) => (
+                      <li {...props} className="mb-1" />
+                    ),
+                    blockquote: ({ node, ...props }) => (
+                      <blockquote
+                        {...props}
+                        className="border-l-4 border-gray-200 dark:border-gray-700 pl-4 py-1 text-gray-600 dark:text-gray-300 italic"
+                      />
+                    ),
+                    a: ({ node, ...props }) => (
+                      <a
+                        {...props}
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    ),
+                    img: ({ node, ...props }) => (
+                      <img
+                        {...props}
+                        className="max-w-full h-auto rounded-lg my-4"
+                        loading="lazy"
+                      />
+                    ),
+                    table: ({ node, ...props }) => (
+                      <div className="overflow-x-auto mb-4">
+                        <table
+                          {...props}
+                          className="min-w-full border border-gray-200 dark:border-gray-700"
+                        />
+                      </div>
+                    ),
+                    th: ({ node, ...props }) => (
+                      <th
+                        {...props}
+                        className="border border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800"
+                      />
+                    ),
+                    td: ({ node, ...props }) => (
+                      <td
+                        {...props}
+                        className="border border-gray-200 dark:border-gray-700 px-4 py-2"
+                      />
+                    ),
+                  }}
+                >
+                  {content.replace(/^[`']{3}markdown\n|\n[`']{3}$/g, "")}
+                </ReactMarkdown>
+              </div>
+            )}
           </div>
         </foreignObject>
       </g>
