@@ -9,26 +9,56 @@ import AnimatedCatLogo from "@/components/ui/animatedCatLogo";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { createClient } from "@/lib/supabase";
 
 export default function PreviewPage() {
   const [formData, setFormData] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [content] = useState("");
-
-  useEffect(() => {
-    const storedData = localStorage.getItem("profileData");
-    if (storedData) {
-      const data = JSON.parse(storedData);
-      setFormData(data);
-      console.log("Form data in preview:", data);
-    }
-  }, []);
-
+  const supabase = createClient();
   const router = useRouter();
 
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Get form data from localStorage
+        const storedData = localStorage.getItem("profileData");
+        if (storedData) {
+          const data = JSON.parse(storedData);
+          setFormData(data);
+          console.log("Form data in preview:", data);
+        }
+
+        // Get user data from Supabase
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          setUser(user);
+          console.log("User data in preview:", user);
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
   const handleEdit = () => {
-    // Navigate back to create page with the last step (review step)
-    router.push("/create?step=15"); // Assuming the review step is the 8th step
+    router.push("/create?step=15");
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="w-screen h-screen flex items-center justify-center">
