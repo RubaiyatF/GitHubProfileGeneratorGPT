@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/ui/Footer";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { Providers } from "@/components/Providers";
 
 const sourceSansPro = Source_Sans_3({
   subsets: ["latin"],
@@ -71,18 +72,20 @@ export default async function RootLayout({
     return (
       <html lang="en" suppressHydrationWarning>
         <body className={sourceSansPro.className}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main className="flex min-h-screen flex-col">
-              <Navbar user={user} /> {/* Pass user instead of session */}
-              {children}
-              <Footer />
-            </main>
-          </ThemeProvider>
+          <Providers>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <main className="flex min-h-screen flex-col">
+                <Navbar user={user} /> {/* Pass user instead of session */}
+                {children}
+                <Footer />
+              </main>
+            </ThemeProvider>
+          </Providers>
         </body>
       </html>
     );
@@ -91,18 +94,20 @@ export default async function RootLayout({
     return (
       <html lang="en" suppressHydrationWarning>
         <body className={sourceSansPro.className}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main className="flex min-h-screen flex-col">
-              <Navbar user={null} />
-              {children}
-              <Footer />
-            </main>
-          </ThemeProvider>
+          <Providers>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <main className="flex min-h-screen flex-col">
+                <Navbar user={null} />
+                {children}
+                <Footer />
+              </main>
+            </ThemeProvider>
+          </Providers>
         </body>
       </html>
     );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { StepComponentProps } from "./AnimatedForm";
 import { useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
+import { useForm } from "@/context/FormContext";
 
 // Interface for section items
 interface SectionItem {
@@ -24,13 +25,13 @@ interface Section {
 
 const ProfileReview = ({
   value,
-  formData,
   onStepChange,
   onKeyDown,
   inputRef,
 }: StepComponentProps) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { state: formData } = useForm();
   const supabase = createClient();
   const router = useRouter();
 
@@ -82,7 +83,11 @@ const ProfileReview = ({
         {
           title: "Basic Information",
           items: [
-            { label: "Professional Title", value: formData?.title, step: 1 },
+            {
+              label: "Professional Title",
+              value: formData?.professionalTitle,
+              step: 1,
+            },
             { label: "Work Focus", value: formData?.workFocus, step: 2 },
             {
               label: "Expertise",
@@ -150,15 +155,23 @@ const ProfileReview = ({
         {
           title: "Personal Details (Part 2)",
           items: [
-            { label: "Time Zone", value: formData?.timezone, step: 11 },
+            { label: "Time Zone", value: formData?.timeZone, step: 11 },
             { label: "Availability", value: formData?.availability, step: 12 },
           ],
         },
         {
-          title: "Customization",
+          title: "Theme & Stats",
           items: [
-            { label: "Theme", value: formData?.theme, step: 13 },
-            { label: "Stats", value: formData?.stats, step: 14 },
+            {
+              label: "Theme",
+              value: formData?.theme,
+              step: 13,
+            },
+            {
+              label: "Stats",
+              value: formData?.stats,
+              step: 14,
+            },
           ],
         },
       ],

@@ -227,39 +227,43 @@ const TimelineItem: React.FC<{
 export const AnimatedForm: React.FC<{
   steps: StepConfig[];
   onSubmit: (data: FormData) => void;
-}> = ({ steps, onSubmit }) => {
-  const [step, setStep] = useState(1);
+  onStepChange?: (step: number, value: any, key: string) => void;
+  initialStep?: number;
+  initialFormData?: any;
+}> = ({
+  steps,
+  onSubmit,
+  onStepChange,
+  initialStep = 1,
+  initialFormData = {},
+}) => {
+  const [step, setStep] = useState(initialStep);
   const [direction, setDirection] = useState(0);
   const [formData, setFormData] = useState<FormData>(() => {
-    if (!steps || steps.length === 0) return {};
-    return steps.reduce((acc, step) => ({ ...acc, [step.key]: "" }), {});
+    // Initialize with either initialFormData or empty object with keys from steps
+    return (
+      initialFormData ||
+      steps.reduce((acc, step) => ({ ...acc, [step.key]: "" }), {})
+    );
   });
+
+  const [ReviewToggle, setReviewToggle] = useState(false);
+  useEffect(() => {
+    if (step === steps.length) {
+      console.log("Toggled ");
+      setReviewToggle(true);
+    }
+  }, [step]);
+
+  // Update form data when initialFormData changes
+  useEffect(() => {
+    if (initialFormData && Object.keys(initialFormData).length > 0) {
+      setFormData(initialFormData);
+    }
+  }, [initialFormData]);
 
   const inputRef = useRef<any>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.target instanceof HTMLTextAreaElement &&
-        e.key === "Enter" &&
-        e.shiftKey
-      ) {
-        return;
-      }
-
-      if (e.key === "Enter") {
-        e.preventDefault();
-        handleNext();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
-        handlePrevious();
-      }
-    };
-
-    window.addEventListener("keydown", handleGlobalKeyDown);
-    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [step]);
 
   const handleNext = (e?: { preventDefault: () => void }) => {
     e?.preventDefault();
@@ -285,6 +289,23 @@ export const AnimatedForm: React.FC<{
     }
   };
 
+  const handleChange = (value: any) => {
+    const currentStep = steps[step - 1];
+    const updatedFormData = { ...formData, [currentStep.key]: value };
+    setFormData(updatedFormData);
+
+    // Call onStepChange if provided
+    if (onStepChange) {
+      onStepChange(step, value, currentStep.key);
+    }
+
+    console.log(`Form data updated for step ${step}:`, {
+      key: currentStep.key,
+      value,
+      formData: updatedFormData,
+    });
+  };
+
   const handleFormKeyDown = (e: React.KeyboardEvent) => {
     if (
       e.target instanceof HTMLTextAreaElement &&
@@ -304,6 +325,29 @@ export const AnimatedForm: React.FC<{
       handlePrevious();
     }
   };
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLTextAreaElement &&
+        e.key === "Enter" &&
+        e.shiftKey
+      ) {
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handlePrevious();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [step]);
 
   if (!steps || steps.length === 0) {
     return null;
@@ -399,9 +443,7 @@ export const AnimatedForm: React.FC<{
               key={step}
               config={currentStep}
               value={formData[currentStep.key]}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, [currentStep.key]: value }))
-              }
+              onChange={handleChange}
               onKeyDown={handleFormKeyDown}
               inputRef={inputRef}
               formData={formData}
@@ -414,7 +456,18 @@ export const AnimatedForm: React.FC<{
             className="flex justify-end gap-6 mt-12"
             variants={animations.itemVariants}
           >
-            {step > 1 && step < steps.length && (
+            {ReviewToggle && step < steps.length && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setStep(steps.length)}
+                className="px-8 py-4 text-lg lg:text-xl bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                type="button"
+              >
+                Done
+              </motion.button>
+            )}
+            {!ReviewToggle && step > 1 && step < steps.length && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
@@ -426,7 +479,7 @@ export const AnimatedForm: React.FC<{
               </motion.button>
             )}
 
-            {step < steps.length && (
+            {!ReviewToggle && step < steps.length && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}

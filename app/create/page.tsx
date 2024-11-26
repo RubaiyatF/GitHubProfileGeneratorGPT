@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AnimatedForm } from "@/components/AnimatedForm";
 import { MultiSelect } from "@/components/ui/multi-select";
@@ -9,6 +9,8 @@ import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import ProfileReview from "@/components/ProfileReview";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useForm } from "@/context/FormContext";
+import { useRouter } from "next/navigation";
 
 interface StepComponentProps {
   value: any;
@@ -514,14 +516,48 @@ const steps = [
   },
 ];
 
-export default function CreatePage() {
+export default function CreatePage({
+  searchParams,
+}: {
+  searchParams: { step?: string };
+}) {
+  const { state, dispatch } = useForm();
+  const router = useRouter();
+  const [initialLoad, setInitialLoad] = React.useState(true);
+
+  // Set initial step from searchParams or start from beginning
+  const initialStep = searchParams.step ? parseInt(searchParams.step) : 1;
+  const [currentStep, setCurrentStep] = React.useState(initialStep);
+
+  React.useEffect(() => {
+    if (initialLoad && state) {
+      setInitialLoad(false);
+    }
+  }, [state, initialLoad]);
+
   const handleSubmit = async (formData: any) => {
     console.log("Form submitted:", formData);
+    dispatch({ type: "SET_FORM_DATA", payload: formData });
+    router.push("/preview");
+  };
+
+  const handleStepChange = (step: number, value: any, key: string) => {
+    console.log(`Step ${step} changed:`, { key, value });
+    dispatch({
+      type: "UPDATE_FIELD",
+      payload: { field: key as keyof FormState, value },
+    });
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <AnimatedForm steps={steps} onSubmit={handleSubmit} />
+      <AnimatedForm
+        steps={steps}
+        onSubmit={handleSubmit}
+        onStepChange={handleStepChange}
+        initialStep={currentStep}
+        initialFormData={state}
+      />
     </div>
   );
 }
