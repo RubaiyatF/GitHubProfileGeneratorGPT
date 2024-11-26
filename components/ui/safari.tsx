@@ -133,9 +133,9 @@ export default function Safari({
         >
           <div
             {...(props as DivProps)}
-            className="w-full h-full overflow-y-auto bg-white dark:bg-[#0D1117]"
+            className="w-full h-full overflow-y-auto bg-white dark:bg-[#0D1117] text-black dark:text-white"
           >
-            <div className="markdown-body w-full h-full">
+            <div className="markdown-body w-full h-full dark:text-white">
               <ReactMarkdown
                 remarkPlugins={remarkPlugins}
                 rehypePlugins={[rehypeRaw]}
@@ -156,7 +156,7 @@ export default function Safari({
                     if (inline) {
                       return (
                         <code
-                          className="bg-[#f6f8fa] dark:bg-[#161B22] px-1 py-0.5 rounded-md text-sm"
+                          className="bg-[#f6f8fa] dark:bg-[#161B22] px-1 py-0.5 rounded-md text-sm text-black dark:text-white"
                           {...props}
                         >
                           {children}
@@ -164,12 +164,16 @@ export default function Safari({
                       );
                     }
                     return (
-                      <code className={className} {...props}>
+                      <code
+                        className={cn(className, "text-black dark:text-white")}
+                        {...props}
+                      >
                         {children}
                       </code>
                     );
                   },
                 }}
+                className="text-black dark:text-white"
               >
                 {content}
               </ReactMarkdown>
