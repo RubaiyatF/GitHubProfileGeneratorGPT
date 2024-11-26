@@ -28,8 +28,10 @@ const Navbar = ({ user }: NavbarProps) => {
 
   const handleSignOut = async () => {
     try {
+      localStorage.removeItem("profileData");
       await supabase.auth.signOut();
       router.push("/");
+      router.refresh();
     } catch (error) {
       console.error("Error signing out:", error);
     }
