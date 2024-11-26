@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { formData, user } = await req.json();
 
-  const prompt = `Create a modern GitHub profile README.md for a developer with the following information:
+  const prompt = `Create a GitHub profile README.md for a developer. Return ONLY the markdown content, no explanations or additional text.
 
 User Information:
 - Name: ${user.user_metadata?.full_name || user.email}
@@ -31,19 +31,16 @@ Styling Preferences:
 - Primary Color: ${formData.theme.primaryColor}
 - Selected GitHub Stats to Show: ${formData.stats.selectedStats.join(", ")}
 
-Please create a modern, well-structured GitHub profile README.md that:
-1. Starts with an eye-catching header using HTML/CSS within markdown, incorporating the user's name and avatar if available
-2. Includes all the professional and personal information in a well-organized layout
-3. Uses modern markdown formatting with emojis
-4. Incorporates the specified GitHub stats widgets with the user's actual GitHub username
-5. Uses badges for technologies and skills
-6. Includes appropriate section headers and dividers
-7. Adds contact/social media sections including the user's email and GitHub profile
-8. Ensures the content is engaging and professional
-9. Uses the specified primary color theme where applicable
-10. Includes a visitor counter badge
+Include:
+- HTML/CSS header with name and avatar
+- Professional and personal sections with emojis
+- GitHub stats widgets (using provided GitHub username)
+- Technology badges
+- Section headers and dividers
+- Contact information
+- Visitor counter
 
-Format the response as valid markdown that can be directly used in a GitHub profile README.md file.`;
+Return only valid markdown content for README.md.`;
 
   // Log the prompt being sent to OpenAI
   console.log("Prompt being sent to OpenAI:", prompt);

@@ -17,6 +17,7 @@ export default function PreviewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showMarkdown, setShowMarkdown] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
@@ -134,6 +135,8 @@ export default function PreviewPage() {
         <Safari
           url="github.com"
           content={content}
+          onToggleView={() => setShowMarkdown(!showMarkdown)}
+          showMarkdown={showMarkdown}
           className="w-full h-[calc(100vh-200px)]"
           remarkPlugins={[remarkGfm]}
         />
