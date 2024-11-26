@@ -63,7 +63,7 @@ export default function Safari({
           fillRule="evenodd"
           clipRule="evenodd"
           d="M1.06738 12C1.06738 5.92487 5.99225 1 12.0674 1H1189.93C1196.01 1 1200.93 5.92487 1200.93 12V51H1.06738V12Z"
-          className="fill-white dark:fill-[#262626]"
+          className="fill-[#A3A3A3] dark:fill-[#262626]"
         />
 
         {/* Window control buttons */}
@@ -110,7 +110,7 @@ export default function Safari({
           <div className="flex items-center justify-end space-x-2 pr-4">
             <Label
               htmlFor="toggle-view"
-              className="text-xs text-zinc-500 dark:text-zinc-100"
+              className="text-xs text-white dark:text-white"
             >
               {showMarkdown ? "Markdown" : "Preview"}
             </Label>
@@ -118,7 +118,7 @@ export default function Safari({
               id="toggle-view"
               onCheckedChange={onToggleView}
               checked={showMarkdown}
-              className="data-[state=checked]:bg-black dark:data-[state=checked]:bg-white data-[state=unchecked]:bg-black dark:data-[state=unchecked]:bg-white"
+              className="data-[state=checked]:bg-[#E5E5E5] dark:data-[state=checked]:bg-white data-[state=unchecked]:bg-[#E5E5E5] dark:data-[state=unchecked]:bg-white"
             />
           </div>
         </foreignObject>
