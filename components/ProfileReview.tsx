@@ -106,7 +106,7 @@ const ProfileReview = ({
       return (
         <div className="flex flex-wrap gap-2">
           {value.map((v: string, i: number) => (
-            <Badge key={i} variant="secondary" className="text-base">
+            <Badge key={i} variant="secondary" className="text-lg px-3 py-1">
               {v}
             </Badge>
           ))}
@@ -114,31 +114,27 @@ const ProfileReview = ({
       );
     }
     if (typeof value === "object" && value !== null) {
-      if (value.selectedStats) {
+      // Special handling for GitHub stats - show enabled stats
+      if (Object.keys(value).some(key => ["github", "language", "streak", "contribution", "trophy"].includes(key))) {
         return (
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2">
-              {value.selectedStats.map((stat: string) => (
-                <Badge key={stat} variant="secondary" className="text-base">
-                  {stat}
-                </Badge>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2">
             {Object.entries(value)
-              .filter(([key]) => key.includes("Color"))
-              .map(([key, val]) => (
-                <div key={key} className="flex items-center gap-2">
-                  <span
-                    className="w-5 h-5 rounded"
-                    style={{ backgroundColor: val as string }}
-                  />
-                  <span className="text-base text-muted-foreground">
-                    {key.replace("Color", "")}
-                  </span>
-                </div>
+              .filter(([_, enabled]) => enabled)
+              .map(([statId]) => (
+                <Badge key={statId} variant="secondary" className="text-lg px-3 py-1">
+                  {statId === "github" ? "GitHub Stats" :
+                   statId === "language" ? "Top Languages" :
+                   statId === "streak" ? "Streak Stats" :
+                   statId === "contribution" ? "Contribution Graph" :
+                   statId === "trophy" ? "GitHub Trophies" : statId}
+                </Badge>
               ))}
           </div>
         );
+      }
+      // Special handling for pronouns
+      if (value.type === "pronouns") {
+        return <span className="text-lg">{value.value}</span>;
       }
       return (
         <div className="space-y-2">
@@ -157,51 +153,51 @@ const ProfileReview = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col pt-20">
       <div className="flex-1 flex items-center">
         <div className="w-full h-full">
           <div className="relative w-full h-full">
-            <div className="flex overflow-x-auto gap-4 p-4 pb-6 snap-x snap-mandatory">
+            {/* Fade effect elements */}
+            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10" />
+
+            {/* Main scrolling content */}
+            <div className="flex overflow-x-auto gap-0 snap-x snap-mandatory scrollbar-hide px-[calc(25%-87.5px)] md:px-[calc(25%-125px)]">
               {REVIEW_SECTIONS.map((section) => (
                 <div
                   key={section.title}
                   className={cn(
                     "rounded-lg border bg-background flex-none w-[350px] md:w-[500px] snap-center",
-                    "border-border shadow-sm"
+                    "border-border shadow-sm mx-2"
                   )}
                 >
-                  <div className="p-4">
-                    <div className="space-y-1.5">
-                      <h4 className="text-lg md:text-xl font-medium flex items-center justify-between">
-                        {section.title}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            section.items[0].step &&
-                            onStepChange(section.items[0].step)
-                          }
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </h4>
-                      <p className="text-base text-muted-foreground">
+                  <div className="p-6">
+                    <div className="space-y-2">
+                      <h4 className="text-2xl font-medium">{section.title}</h4>
+                      <p className="text-lg text-muted-foreground">
                         {section.description}
                       </p>
                     </div>
 
-                    <div className="mt-4 space-y-4">
+                    <div className="mt-6 space-y-6">
                       {section.items.map((item) => (
-                        <div key={item.label} className="space-y-1.5">
-                          <div className="text-base font-medium text-muted-foreground">
-                            {item.label}
-                          </div>
-                          <div className="text-lg">
-                            {renderValue(
-                              formData?.[item.value as keyof typeof formData]
+                        <div key={item.label} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="text-lg font-medium text-muted-foreground">
+                              {item.label}
+                            </div>
+                            {item.step && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => onStepChange(item.step)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
                             )}
                           </div>
+                          <div>{renderValue(formData[item.value])}</div>
                         </div>
                       ))}
                     </div>
@@ -212,21 +208,13 @@ const ProfileReview = ({
           </div>
         </div>
       </div>
-
-      <div className="sticky bottom-0 bg-background/80 backdrop-blur-sm ">
-        <div className="flex justify-end max-w-[95%] mx-auto">
-          <Button
-            onClick={() => {
-              localStorage.setItem("profileData", JSON.stringify(formData));
-              router.push("/preview");
-            }}
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            Generate Profile
-          </Button>
-        </div>
-      </div>
+      <Button
+        onClick={() => router.push("/preview")}
+        className="fixed bottom-8 right-8 z-50 rainbow-button"
+        size="lg"
+      >
+        Generate Profile
+      </Button>
     </div>
   );
 };

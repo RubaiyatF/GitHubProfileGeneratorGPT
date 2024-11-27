@@ -244,13 +244,12 @@ const TimeZoneInput: React.FC<StepComponentProps> = ({
     const timezone = now.timezone().name;
     setSystemTimeZone(timezone);
 
-    // Set system timezone as default value on first load, but don't auto-advance
+    // Only set system timezone as default if no value exists
     if (!value) {
       onChange(timezone);
     }
   }, []);
 
-  // List of common timezones with system timezone first
   const timeZones = React.useMemo(() => {
     const zones = [
       "America/New_York",
@@ -278,9 +277,11 @@ const TimeZoneInput: React.FC<StepComponentProps> = ({
     onChange(newValue);
   };
 
+  const currentValue = value || systemTimeZone;
+
   return (
     <div className="relative w-full px-12 py-12" onKeyDown={onKeyDown}>
-      <Select value={value || systemTimeZone} onValueChange={handleValueChange}>
+      <Select value={currentValue} onValueChange={handleValueChange}>
         <SelectTrigger className="w-full py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200">
           <SelectValue placeholder="Select your timezone" />
         </SelectTrigger>
@@ -487,11 +488,37 @@ const ExpertiseInput: React.FC<StepComponentProps> = ({
       <MultiSelectorContent>
         <MultiSelectorList>
           {[
-            "Frontend Development",
-            "Backend Development",
-            "DevOps",
-            "Cloud Computing",
-            "Machine Learning",
+            "JavaScript",
+            "TypeScript",
+            "React",
+            "Angular",
+            "Vue.js",
+            "Node.js",
+            "Express.js",
+            "Nest.js",
+            "Ruby",
+            "Python",
+            "Django",
+            "Flask",
+            "Java",
+            "Spring",
+            "Kotlin",
+            "C#",
+            "ASP.NET",
+            "Go",
+            "Rust",
+            "Swift",
+            "PHP",
+            "Laravel",
+            "CodeIgniter",
+            "C++",
+            "MATLAB",
+            "R",
+            "SQL",
+            "PostgreSQL",
+            "MongoDB",
+            "MySQL",
+            "Redis",
           ].map((expertise, i) => (
             <MultiSelectorItem key={i} value={expertise}>
               {expertise}
@@ -732,7 +759,7 @@ const ContactPreferencesInput: React.FC<StepComponentProps> = ({
 
       <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
         <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-          Tab to navigate, Enter to continue ↵
+          Select your preferences and Enter to continue ↵
         </span>
       </kbd>
     </div>
@@ -817,7 +844,7 @@ const GITHUB_STATS: StatType[] = [
         id: "lang-default",
         title: "Default Style",
         imageUrl:
-          "https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=000000&icon_color=00d73d&text_color=000000&bg_color=00000000",
+          "https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=000000&text_color=000000&bg_color=00000000",
       },
     ],
   },
@@ -863,7 +890,7 @@ const GITHUB_STATS: StatType[] = [
 ];
 
 const StatsConfigInput: React.FC<StepComponentProps> = ({
-  value,
+  value = {},
   onChange,
   formData,
 }) => {
@@ -880,12 +907,11 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
 
   const handleToggleStat = useCallback(
     (statId: string, enabled: boolean) => {
+      // Convert the ID to match what we use in the review
+      const newStatId = statId.replace(/-stats$/, "");
       const newConfig = {
         ...value,
-        [statId]: {
-          ...value[statId],
-          enabled,
-        },
+        [newStatId]: enabled,
       };
       onChange(newConfig);
     },
@@ -904,15 +930,15 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
       const colorHex = accentColor.replace("#", "");
 
       switch (statId) {
-        case "github-stats":
+        case "github":
           return `https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=${colorHex}&icon_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
-        case "language-stats":
+        case "language":
           return `https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
-        case "streak-stats":
+        case "streak":
           return `https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=${colorHex}&fire=${colorHex}&currStreakNum=${colorHex}&sideNums=${colorHex}&currStreakLabel=${colorHex}&sideLabels=${colorHex}&dates=${colorHex}&stroke=${colorHex}&background=ffffff00`;
-        case "contribution-stats":
+        case "contribution":
           return `https://github-readme-activity-graph.vercel.app/graph?username=b0ney-1&bg_color=ffffff00&color=${colorHex}&line=${colorHex}&point=${colorHex}&area_color=${colorHex}&area=true&hide_border=true`;
-        case "trophy-stats":
+        case "trophy":
           return `https://github-profile-trophy.vercel.app/?username=b0ney-1&theme=flat&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00&no-frame=true`;
         default:
           return "";
@@ -934,7 +960,7 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {GITHUB_STATS.map((stat) => {
-          const isEnabled = value?.[stat.id]?.enabled || false;
+          const isEnabled = value?.[stat.id.replace(/-stats$/, "")] || false;
           return (
             <Dialog key={stat.id}>
               <DialogTrigger asChild>
@@ -956,7 +982,7 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
                         </div>
                       )}
                       <img
-                        src={getPreviewUrl(stat.id)}
+                        src={getPreviewUrl(stat.id.replace(/-stats$/, ""))}
                         alt={stat.title}
                         className="w-full h-full object-contain p-2"
                         onLoad={() => handleImageLoad(stat.id)}
@@ -998,7 +1024,7 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
                 </DialogHeader>
                 <div className="w-full aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-white/5">
                   <img
-                    src={getPreviewUrl(stat.id)}
+                    src={getPreviewUrl(stat.id.replace(/-stats$/, ""))}
                     alt={stat.title}
                     className="w-full h-full object-contain p-4"
                   />

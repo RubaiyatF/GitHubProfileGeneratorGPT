@@ -369,7 +369,7 @@ export const AnimatedForm: React.FC<{
     >
       {/* Timeline Section */}
       <motion.div
-        className="relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden md:flex hidden"
+        className="relative w-full md:w-1/4 h-full flex items-center overflow-hidden md:flex hidden"
         variants={animations.itemVariants}
       >
         {/* Timeline Container */}
