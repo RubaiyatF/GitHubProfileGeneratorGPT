@@ -101,6 +101,7 @@ const FormStep: React.FC<{
   formData: FormData;
   onStepChange: (step: number) => void;
   direction: number;
+  currentStep?: number;
 }> = ({
   config,
   value,
@@ -110,6 +111,7 @@ const FormStep: React.FC<{
   formData,
   onStepChange,
   direction,
+  currentStep,
 }) => {
   const StepComponent = config.component;
 
@@ -131,26 +133,28 @@ const FormStep: React.FC<{
       custom={direction}
       className="space-y-6 relative w-full px-4 md:px-8"
     >
-      <div className="flex items-center space-x-4 justify-start w-full">
-        <motion.div
-          animate={{
-            y: [0, -10, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="w-20 h-20 md:w-24 md:h-24 text-primary"
-        >
-          <Logo />
-        </motion.div>
-        <WordFadeIn
-          words={config.title}
-          className="block text-2xl md:text-4xl font-medium text-foreground"
-          delay={0.3}
-        />
-      </div>
+      {currentStep !== 20 && (
+        <div className="flex items-center space-x-4 justify-start w-full">
+          <motion.div
+            animate={{
+              y: [0, -10, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="w-20 h-20 md:w-24 md:h-24 text-primary"
+          >
+            <Logo />
+          </motion.div>
+          <WordFadeIn
+            words={config.title}
+            className="block text-2xl md:text-4xl font-medium text-foreground"
+            delay={0.3}
+          />
+        </div>
+      )}
 
       <div className="w-full">
         <StepComponent
@@ -365,7 +369,7 @@ export const AnimatedForm: React.FC<{
     >
       {/* Timeline Section */}
       <motion.div
-        className=" relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden md:flex hidden"
+        className="relative w-full md:w-1/4 h-full bg-accent/5 flex items-center overflow-hidden md:flex hidden"
         variants={animations.itemVariants}
       >
         {/* Timeline Container */}
@@ -430,7 +434,7 @@ export const AnimatedForm: React.FC<{
 
       {/* Form Section */}
       <motion.div
-        className="flex-1 h-full w-full flex items-center justify-center p-8 md:p-16"
+        className="flex-1 h-full w-full md:w-3/4 flex items-center justify-center p-8 md:p-16"
         variants={animations.formVariants}
       >
         <motion.form
@@ -449,6 +453,7 @@ export const AnimatedForm: React.FC<{
               formData={formData}
               onStepChange={setStep}
               direction={direction}
+              currentStep={step}
             />
           </AnimatePresence>
 

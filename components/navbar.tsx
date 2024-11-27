@@ -38,7 +38,7 @@ const Navbar = ({ user }: NavbarProps) => {
   };
 
   return (
-    <div className="w-full fixed top-0 left-0 z-50 bg-background">
+    <div className="w-full fixed top-0 left-0 z-50">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 w-full">
           <div className="flex-1">

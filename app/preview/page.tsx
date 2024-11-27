@@ -114,7 +114,7 @@ export default function PreviewPage() {
   };
 
   const handleEdit = () => {
-    router.push("/create?step=15");
+    router.push("/create?step=20");
   };
 
   if (isLoading) {

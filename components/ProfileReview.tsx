@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { StepComponentProps } from "./AnimatedForm";
 import { useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
 import { useForm } from "@/context/FormContext";
+import { cn } from "@/lib/utils";
 
 interface SectionItem {
   label: string;
@@ -18,8 +18,64 @@ interface SectionItem {
 
 interface Section {
   title: string;
+  description: string;
   items: SectionItem[];
+  icon?: React.ReactNode;
 }
+
+const REVIEW_SECTIONS: Section[] = [
+  {
+    title: "Professional Profile",
+    description: "Your professional identity and experience",
+    items: [
+      { label: "Professional Title", value: "professionalTitle", step: 1 },
+      { label: "Years of Experience", value: "yearsExperience", step: 2 },
+      { label: "Current Organization", value: "organization", step: 3 },
+      { label: "LinkedIn Profile", value: "linkedIn", step: 4 },
+      { label: "Professional Summary", value: "summary", step: 5 },
+    ],
+  },
+  {
+    title: "Communication & Languages",
+    description: "Your communication preferences and languages",
+    items: [
+      { label: "Time Zone", value: "timeZone", step: 6 },
+      { label: "Pronouns", value: "pronouns", step: 7 },
+      { label: "Languages Spoken", value: "languages", isArray: true, step: 8 },
+    ],
+  },
+  {
+    title: "Expertise & Achievements",
+    description: "Your skills and recent accomplishments",
+    items: [
+      {
+        label: "Areas of Expertise",
+        value: "expertise",
+        isArray: true,
+        step: 9,
+      },
+      { label: "Recent Achievements", value: "achievements", step: 10 },
+    ],
+  },
+  {
+    title: "Collaboration Preferences",
+    description: "Your collaboration and mentorship interests",
+    items: [
+      { label: "Open to Collaborate", value: "collaboration", step: 11 },
+      { label: "Mentorship Preferences", value: "mentorship", step: 12 },
+      { label: "Open Source Interest", value: "openSource", step: 13 },
+      { label: "Contact Preferences", value: "contactPreferences", step: 14 },
+    ],
+  },
+  {
+    title: "Profile Customization",
+    description: "Your visual preferences and GitHub stats",
+    items: [
+      { label: "Accent Color", value: "accentColor", step: 15 },
+      { label: "GitHub Stats", value: "statsConfig", step: 16 },
+    ],
+  },
+];
 
 const ProfileReview = ({
   value,
@@ -50,7 +106,7 @@ const ProfileReview = ({
       return (
         <div className="flex flex-wrap gap-2">
           {value.map((v: string, i: number) => (
-            <Badge key={i} variant="secondary">
+            <Badge key={i} variant="secondary" className="text-base">
               {v}
             </Badge>
           ))}
@@ -60,10 +116,10 @@ const ProfileReview = ({
     if (typeof value === "object" && value !== null) {
       if (value.selectedStats) {
         return (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
               {value.selectedStats.map((stat: string) => (
-                <Badge key={stat} variant="secondary">
+                <Badge key={stat} variant="secondary" className="text-base">
                   {stat}
                 </Badge>
               ))}
@@ -73,10 +129,10 @@ const ProfileReview = ({
               .map(([key, val]) => (
                 <div key={key} className="flex items-center gap-2">
                   <span
-                    className="w-4 h-4 rounded"
+                    className="w-5 h-5 rounded"
                     style={{ backgroundColor: val as string }}
                   />
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-base text-muted-foreground">
                     {key.replace("Color", "")}
                   </span>
                 </div>
@@ -85,185 +141,91 @@ const ProfileReview = ({
         );
       }
       return (
-        <div className="space-y-1">
+        <div className="space-y-2">
           {Object.entries(value).map(([key, val]) => (
             <div key={key} className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground capitalize">
+              <span className="text-base text-muted-foreground capitalize">
                 {key}:
               </span>
-              <span className="text-sm">{String(val)}</span>
+              <span className="text-lg">{String(val)}</span>
             </div>
           ))}
         </div>
       );
     }
-    return value;
+    return <span className="text-lg">{value}</span>;
   };
 
-  const columnSections = [
-    // Column 1: Professional Information
-    {
-      sections: [
-        {
-          title: "Professional Information",
-          items: [
-            {
-              label: "Professional Title",
-              value: formData?.professionalTitle,
-              step: 1,
-            },
-            {
-              label: "Years of Experience",
-              value: formData?.yearsExperience,
-              step: 2,
-            },
-            {
-              label: "Current Organization",
-              value: formData?.organization,
-              step: 3,
-            },
-            { label: "LinkedIn Profile", value: formData?.linkedIn, step: 4 },
-            {
-              label: "Professional Summary",
-              value: formData?.summary,
-              step: 5,
-            },
-          ],
-        },
-        {
-          title: "Communication",
-          items: [
-            { label: "Time Zone", value: formData?.timeZone, step: 6 },
-            { label: "Pronouns", value: formData?.pronouns, step: 7 },
-            {
-              label: "Languages Spoken",
-              value: formData?.languages,
-              isArray: true,
-              step: 8,
-            },
-          ],
-        },
-      ],
-    },
-    // Column 2: Expertise and Collaboration
-    {
-      sections: [
-        {
-          title: "Expertise & Achievements",
-          items: [
-            {
-              label: "Areas of Expertise",
-              value: formData?.expertise,
-              isArray: true,
-              step: 9,
-            },
-            {
-              label: "Recent Achievements",
-              value: formData?.achievements,
-              step: 10,
-            },
-          ],
-        },
-        {
-          title: "Collaboration & Mentorship",
-          items: [
-            {
-              label: "Open to Collaborate",
-              value: formData?.collaboration,
-              step: 11,
-            },
-            {
-              label: "Mentorship Preferences",
-              value: formData?.mentorship,
-              step: 12,
-            },
-            {
-              label: "Open Source Interest",
-              value: formData?.openSource,
-              step: 13,
-            },
-            {
-              label: "Contact Preferences",
-              value: formData?.contactPreferences,
-              step: 14,
-            },
-          ],
-        },
-      ],
-    },
-    // Column 3: Customization and Personal Touch
-    {
-      sections: [
-        {
-          title: "Profile Customization",
-          items: [
-            { label: "Accent Color", value: formData?.accentColor, step: 15 },
-            { label: "GitHub Stats", value: formData?.statsConfig, step: 16 },
-          ],
-        },
-        {
-          title: "Personal Touch",
-          items: [
-            { label: "Fun Facts", value: formData?.funFacts, step: 17 },
-            { label: "Use Emojis", value: formData?.useEmojis, step: 18 },
-            { label: "Animated SVG", value: formData?.animatedSvg, step: 19 },
-          ],
-        },
-      ],
-    },
-  ];
-
   return (
-    <div className="w-full space-y-6">
-      {/* Review Sections */}
-      <div className="grid grid-cols-3 gap-6">
-        {columnSections.map((column, columnIndex) => (
-          <Card key={columnIndex} className="h-fit">
-            <CardContent className="p-6 space-y-6">
-              {column.sections.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="space-y-4">
-                  <h3 className="text-xl font-bold">{section.title}</h3>
-                  <div className="space-y-4">
-                    {section.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 flex items-center">
+        <div className="w-full h-full">
+          <div className="relative w-full h-full">
+            <div className="flex overflow-x-auto gap-4 p-4 pb-6 snap-x snap-mandatory">
+              {REVIEW_SECTIONS.map((section) => (
+                <div
+                  key={section.title}
+                  className={cn(
+                    "rounded-lg border bg-background flex-none w-[350px] md:w-[500px] snap-center",
+                    "border-border shadow-sm"
+                  )}
+                >
+                  <div className="p-4">
+                    <div className="space-y-1.5">
+                      <h4 className="text-lg md:text-xl font-medium flex items-center justify-between">
+                        {section.title}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() =>
+                            section.items[0].step &&
+                            onStepChange(section.items[0].step)
+                          }
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </h4>
+                      <p className="text-base text-muted-foreground">
+                        {section.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 space-y-4">
+                      {section.items.map((item) => (
+                        <div key={item.label} className="space-y-1.5">
+                          <div className="text-base font-medium text-muted-foreground">
                             {item.label}
-                          </span>
-                          {item.step && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onStepChange?.(item.step ?? 0)}
-                              className="h-8 px-2"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          )}
+                          </div>
+                          <div className="text-lg">
+                            {renderValue(
+                              formData?.[item.value as keyof typeof formData]
+                            )}
+                          </div>
                         </div>
-                        <div className="text-sm">{renderValue(item.value)}</div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Generate Profile Button */}
-      <div className="flex justify-end">
-        <Button
-          onClick={() => {
-            localStorage.setItem("profileData", JSON.stringify(formData));
-            router.push("/preview");
-          }}
-          size="lg"
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          Generate Profile
-        </Button>
+      <div className="sticky bottom-0 bg-background/80 backdrop-blur-sm ">
+        <div className="flex justify-end max-w-[95%] mx-auto">
+          <Button
+            onClick={() => {
+              localStorage.setItem("profileData", JSON.stringify(formData));
+              router.push("/preview");
+            }}
+            size="lg"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            Generate Profile
+          </Button>
+        </div>
       </div>
     </div>
   );
