@@ -77,40 +77,40 @@ export default function PreviewPage() {
     setIsGenerating(true);
     setContent(""); // Reset content before generating new profile
 
-    try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          formData,
-          user,
-        }),
-      });
+    // try {
+    //   const response = await fetch("/api/generate", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       formData,
+    //       user,
+    //     }),
+    //   });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate profile");
-      }
+    //   if (!response.ok) {
+    //     throw new Error("Failed to generate profile");
+    //   }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
+    //   const reader = response.body?.getReader();
+    //   const decoder = new TextDecoder();
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+    //   if (reader) {
+    //     while (true) {
+    //       const { done, value } = await reader.read();
+    //       if (done) break;
 
-          const text = decoder.decode(value);
-          setContent((prev) => prev + text);
-        }
-      }
-    } catch (error) {
-      console.error("Error generating profile:", error);
-      // You might want to show an error message to the user here
-    } finally {
-      setIsGenerating(false);
-    }
+    //       const text = decoder.decode(value);
+    //       setContent((prev) => prev + text);
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.error("Error generating profile:", error);
+    //   // You might want to show an error message to the user here
+    // } finally {
+    //   setIsGenerating(false);
+    // }
   };
 
   const handleEdit = () => {
