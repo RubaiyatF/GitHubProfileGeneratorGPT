@@ -7,6 +7,7 @@ import Footer from "@/components/ui/Footer";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { Providers } from "@/components/Providers";
+import { Toaster } from "sonner";
 
 const sourceSansPro = Source_Sans_3({
   subsets: ["latin"],
@@ -83,6 +84,7 @@ export default async function RootLayout({
                 <Navbar user={user} /> {/* Pass user instead of session */}
                 {children}
                 <Footer />
+                <Toaster richColors position="top-center" />
               </main>
             </ThemeProvider>
           </Providers>
@@ -105,6 +107,7 @@ export default async function RootLayout({
                 <Navbar user={null} />
                 {children}
                 <Footer />
+                <Toaster richColors position="top-center" />
               </main>
             </ThemeProvider>
           </Providers>
