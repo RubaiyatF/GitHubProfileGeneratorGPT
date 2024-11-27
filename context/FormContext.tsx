@@ -4,6 +4,19 @@ import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 // Define the form state interface
 interface FormState {
+  yearsExperience: any;
+  organization: any;
+  linkedIn: any;
+  summary: any;
+  achievements: any;
+  collaboration: any;
+  mentorship: any;
+  openSource: any;
+  contactPreferences: any;
+  accentColor: any;
+  statsConfig: any;
+  useEmojis: any;
+  animatedSvg: any;
   name?: string;
   bio?: string;
   professionalTitle?: string;

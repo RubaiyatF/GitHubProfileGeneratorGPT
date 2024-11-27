@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { Edit } from "lucide-react";
 import { useForm } from "@/context/FormContext";
 
-// Interface for section items
 interface SectionItem {
   label: string;
   value: any;
@@ -17,7 +16,6 @@ interface SectionItem {
   step?: number;
 }
 
-// Interface for sections
 interface Section {
   title: string;
   items: SectionItem[];
@@ -59,7 +57,33 @@ const ProfileReview = ({
         </div>
       );
     }
-    if (typeof value === "object") {
+    if (typeof value === "object" && value !== null) {
+      if (value.selectedStats) {
+        return (
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {value.selectedStats.map((stat: string) => (
+                <Badge key={stat} variant="secondary">
+                  {stat}
+                </Badge>
+              ))}
+            </div>
+            {Object.entries(value)
+              .filter(([key]) => key.includes("Color"))
+              .map(([key, val]) => (
+                <div key={key} className="flex items-center gap-2">
+                  <span
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: val as string }}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {key.replace("Color", "")}
+                  </span>
+                </div>
+              ))}
+          </div>
+        );
+      }
       return (
         <div className="space-y-1">
           {Object.entries(value).map(([key, val]) => (
@@ -77,101 +101,112 @@ const ProfileReview = ({
   };
 
   const columnSections = [
-    // Column 1: Basic Info and Learning & Growth
+    // Column 1: Professional Information
     {
       sections: [
         {
-          title: "Basic Information",
+          title: "Professional Information",
           items: [
             {
               label: "Professional Title",
               value: formData?.professionalTitle,
               step: 1,
             },
-            { label: "Work Focus", value: formData?.workFocus, step: 2 },
             {
-              label: "Expertise",
-              value: formData?.expertise,
-              isArray: true,
+              label: "Years of Experience",
+              value: formData?.yearsExperience,
+              step: 2,
+            },
+            {
+              label: "Current Organization",
+              value: formData?.organization,
               step: 3,
             },
-          ],
-        },
-        {
-          title: "Learning & Growth",
-          items: [
+            { label: "LinkedIn Profile", value: formData?.linkedIn, step: 4 },
             {
-              label: "Learning Goals",
-              value: formData?.learningGoals,
-              step: 4,
-            },
-            {
-              label: "Collaboration Interests",
-              value: formData?.collaborationInterests,
+              label: "Professional Summary",
+              value: formData?.summary,
               step: 5,
             },
           ],
         },
-      ],
-    },
-    // Column 2: Community Engagement and part of Personal Details
-    {
-      sections: [
         {
-          title: "Community Engagement",
+          title: "Communication",
           items: [
+            { label: "Time Zone", value: formData?.timeZone, step: 6 },
+            { label: "Pronouns", value: formData?.pronouns, step: 7 },
             {
-              label: "Help Topics",
-              value: formData?.helpTopics,
+              label: "Languages Spoken",
+              value: formData?.languages,
               isArray: true,
-              step: 6,
-            },
-            {
-              label: "Expertise Topics",
-              value: formData?.expertiseTopics,
-              isArray: true,
-              step: 7,
+              step: 8,
             },
           ],
         },
+      ],
+    },
+    // Column 2: Expertise and Collaboration
+    {
+      sections: [
         {
-          title: "Personal Details (Part 1)",
+          title: "Expertise & Achievements",
           items: [
-            { label: "Fun Facts", value: formData?.funFacts, step: 8 },
-            { label: "Pronouns", value: formData?.pronouns, step: 9 },
             {
-              label: "Languages",
-              value: formData?.languages,
+              label: "Areas of Expertise",
+              value: formData?.expertise,
               isArray: true,
+              step: 9,
+            },
+            {
+              label: "Recent Achievements",
+              value: formData?.achievements,
               step: 10,
             },
           ],
         },
-      ],
-    },
-    // Column 3: Rest of Personal Details and Customization
-    {
-      sections: [
         {
-          title: "Personal Details (Part 2)",
-          items: [
-            { label: "Time Zone", value: formData?.timeZone, step: 11 },
-            { label: "Availability", value: formData?.availability, step: 12 },
-          ],
-        },
-        {
-          title: "Theme & Stats",
+          title: "Collaboration & Mentorship",
           items: [
             {
-              label: "Theme",
-              value: formData?.theme,
+              label: "Open to Collaborate",
+              value: formData?.collaboration,
+              step: 11,
+            },
+            {
+              label: "Mentorship Preferences",
+              value: formData?.mentorship,
+              step: 12,
+            },
+            {
+              label: "Open Source Interest",
+              value: formData?.openSource,
               step: 13,
             },
             {
-              label: "Stats",
-              value: formData?.stats,
+              label: "Contact Preferences",
+              value: formData?.contactPreferences,
               step: 14,
             },
+          ],
+        },
+      ],
+    },
+    // Column 3: Customization and Personal Touch
+    {
+      sections: [
+        {
+          title: "Profile Customization",
+          items: [
+            { label: "Accent Color", value: formData?.accentColor, step: 15 },
+            { label: "GitHub Stats", value: formData?.statsConfig, step: 16 },
+          ],
+        },
+        {
+          title: "Personal Touch",
+          items: [
+            { label: "Fun Facts", value: formData?.funFacts, step: 17 },
+            { label: "Use Emojis", value: formData?.useEmojis, step: 18 },
+            { label: "Animated SVG", value: formData?.animatedSvg, step: 19 },
           ],
         },
       ],
@@ -180,6 +215,7 @@ const ProfileReview = ({
 
   return (
     <div className="w-full space-y-6">
+      {/* Review Sections */}
       <div className="grid grid-cols-3 gap-6">
         {columnSections.map((column, columnIndex) => (
           <Card key={columnIndex} className="h-fit">
@@ -205,11 +241,7 @@ const ProfileReview = ({
                             </Button>
                           )}
                         </div>
-                        <div className="text-sm">
-                          {item.isArray
-                            ? renderValue(item.value)
-                            : renderValue(item.value)}
-                        </div>
+                        <div className="text-sm">{renderValue(item.value)}</div>
                       </div>
                     ))}
                   </div>
@@ -219,6 +251,8 @@ const ProfileReview = ({
           </Card>
         ))}
       </div>
+
+      {/* Generate Profile Button */}
       <div className="flex justify-end">
         <Button
           onClick={() => {
@@ -226,6 +260,7 @@ const ProfileReview = ({
             router.push("/preview");
           }}
           size="lg"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           Generate Profile
         </Button>

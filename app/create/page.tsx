@@ -5,10 +5,11 @@ import { AnimatedForm } from "@/components/AnimatedForm";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
-import ProfileReview from "@/components/ProfileReview";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import ProfileReview from "@/components/ProfileReview";
 import { useForm } from "@/context/FormContext";
 import { useRouter } from "next/navigation";
 
@@ -19,170 +20,154 @@ interface StepComponentProps {
   inputRef: React.RefObject<any>;
 }
 
-// Basic Information Inputs
-const ProfessionalTitleInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <motion.input
-    ref={inputRef}
-    type="text"
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={onKeyDown}
-    placeholder="e.g., Senior Frontend Developer"
-    whileFocus={{ scale: 1.02 }}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
-  />
-);
-
-const WorkFocusInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <motion.textarea
-    ref={inputRef}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={onKeyDown}
-    placeholder="Describe your current work and interests..."
-    rows={4}
-    whileFocus={{ scale: 1.02 }}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
-  />
-);
-
-const ExpertiseInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <MultiSelect
-    ref={inputRef}
-    value={value || []}
-    onChange={onChange}
-    onKeyDown={onKeyDown}
-    options={[
-      "JavaScript",
-      "TypeScript",
-      "React",
-      "Node.js",
-      "Python",
-      "Java",
-      "DevOps",
-      "Cloud Computing",
-      "Machine Learning",
-    ]}
-    placeholder="Select your areas of expertise"
-    className="w-full"
-  />
-);
-
-const LearningGoalsInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <motion.textarea
-    ref={inputRef}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={onKeyDown}
-    placeholder="What are you currently learning or planning to learn?"
-    rows={4}
-    whileFocus={{ scale: 1.02 }}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
-  />
-);
-
-const CollaborationInterestsInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <motion.textarea
-    ref={inputRef}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={onKeyDown}
-    placeholder="What kind of projects would you like to collaborate on?"
-    rows={4}
-    whileFocus={{ scale: 1.02 }}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
-  />
-);
-
-const HelpTopicsInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <MultiSelect
-    ref={inputRef}
-    value={value || []}
-    onChange={onChange}
-    onKeyDown={onKeyDown}
-    options={[
-      "Code Review",
-      "Architecture",
-      "Best Practices",
-      "Career Advice",
-      "Technical Writing",
-      "Open Source",
-    ]}
-    placeholder="Select areas where you need help"
-    className="w-full"
-  />
-);
-
-const ExpertiseTopicsInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <MultiSelect
-    ref={inputRef}
-    value={value || []}
-    onChange={onChange}
-    onKeyDown={onKeyDown}
-    options={[
-      "Frontend Development",
-      "Backend Development",
-      "System Design",
-      "Database Design",
-      "UI/UX",
-      "Testing",
-      "DevOps",
-    ]}
-    placeholder="Select topics you can help others with"
-    className="w-full"
-  />
-);
-
+// Adding the missing FunFactsInput component
 const FunFactsInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
 }) => (
-  <motion.textarea
+  <Textarea
     ref={inputRef}
     value={value}
     onChange={(e) => onChange(e.target.value)}
     onKeyDown={onKeyDown}
-    placeholder="Share some interesting facts about yourself..."
-    rows={4}
-    whileFocus={{ scale: 1.02 }}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
+    placeholder="Share some fun facts about yourself (optional)"
+    className="w-full h-32"
+  />
+);
+
+// Adding EmojiToggleInput component
+const EmojiToggleInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <div className="flex items-center space-x-4">
+    <Switch
+      ref={inputRef}
+      checked={value}
+      onCheckedChange={onChange}
+      id="emoji-toggle"
+    />
+    <label htmlFor="emoji-toggle">Use emojis in your profile?</label>
+  </div>
+);
+
+// Adding AnimatedSvgToggleInput component
+const AnimatedSvgToggleInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <div className="flex items-center space-x-4">
+    <Switch
+      ref={inputRef}
+      checked={value}
+      onCheckedChange={onChange}
+      id="svg-toggle"
+    />
+    <label htmlFor="svg-toggle">Include animated SVG elements?</label>
+  </div>
+);
+
+// Input Components for Professional Info
+const ProfessionalTitleInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Input
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="e.g., Senior Frontend Developer"
+    className="w-full"
+  />
+);
+
+const YearsExperienceInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Input
+    ref={inputRef}
+    type="number"
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="Years of experience"
+    className="w-full"
+  />
+);
+
+const OrganizationInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Input
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="Current organization"
+    className="w-full"
+  />
+);
+
+const LinkedInInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Input
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="LinkedIn profile URL"
+    className="w-full"
+  />
+);
+
+const ProfessionalSummaryInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Textarea
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="Write a brief professional summary..."
+    className="w-full h-32"
+  />
+);
+
+const TimeZoneInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Input
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="Your time zone"
+    className="w-full"
   />
 );
 
@@ -196,7 +181,6 @@ const PronounsInput: React.FC<StepComponentProps> = ({
     ref={inputRef}
     value={value}
     onValueChange={onChange}
-    onKeyDown={onKeyDown}
     type="single"
     className="w-full justify-start space-x-4"
   >
@@ -217,226 +201,192 @@ const LanguagesInput: React.FC<StepComponentProps> = ({
     ref={inputRef}
     value={value || []}
     onChange={onChange}
-    onKeyDown={onKeyDown}
-    options={[
-      "English",
-      "Spanish",
-      "French",
-      "German",
-      "Chinese",
-      "Japanese",
-      "Korean",
-      "Hindi",
-    ]}
+    options={["English", "Spanish", "French", "German", "Chinese", "Japanese"]}
     placeholder="Select languages you speak"
     className="w-full"
   />
 );
 
-const TimeZoneInput: React.FC<StepComponentProps> = ({
+const ExpertiseInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
 }) => (
-  <motion.select
+  <MultiSelect
     ref={inputRef}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={onKeyDown}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
-  >
-    <option value="">Select your time zone</option>
-    {/* Add time zone options dynamically */}
-  </motion.select>
-);
-
-const AvailabilityInput: React.FC<StepComponentProps> = ({
-  value,
-  onChange,
-  onKeyDown,
-  inputRef,
-}) => (
-  <motion.textarea
-    ref={inputRef}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={onKeyDown}
-    placeholder="Describe your availability for collaboration..."
-    rows={4}
-    whileFocus={{ scale: 1.02 }}
-    className="w-full p-4 lg:p-6 text-lg lg:text-xl bg-background border-2 border-input rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-foreground"
+    value={value || []}
+    onChange={onChange}
+    options={[
+      "Frontend Development",
+      "Backend Development",
+      "DevOps",
+      "Cloud Computing",
+      "Machine Learning",
+    ]}
+    placeholder="Select your areas of expertise"
+    className="w-full"
   />
 );
 
-// Theme Customization Inputs
-const ThemeCustomizationInput: React.FC<StepComponentProps> = ({
+const RecentAchievementsInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
 }) => (
-  <div className="space-y-6">
-    <ToggleGroup
-      ref={inputRef}
-      value={value?.mode || "light"}
-      onValueChange={(mode) => onChange({ ...value, mode })}
-      onKeyDown={onKeyDown}
-      type="single"
-      className="w-full justify-start space-x-4"
-    >
-      <ToggleGroupItem value="light">Light Mode</ToggleGroupItem>
-      <ToggleGroupItem value="dark">Dark Mode</ToggleGroupItem>
-      <ToggleGroupItem value="system">System</ToggleGroupItem>
-    </ToggleGroup>
-    <ColorPicker
-      value={value?.primaryColor || "#000000"}
-      onChange={(primaryColor) => onChange({ ...value, primaryColor })}
-      label="Primary Color"
-    />
-    <ToggleGroup
-      value={value?.layout || "single"}
-      onValueChange={(layout) => onChange({ ...value, layout })}
-      type="single"
-      className="w-full justify-start space-x-4"
-    >
-      <ToggleGroupItem value="single">Single Column</ToggleGroupItem>
-      <ToggleGroupItem value="double">Double Column</ToggleGroupItem>
-    </ToggleGroup>
-  </div>
+  <Textarea
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="Share your recent achievements..."
+    className="w-full h-32"
+  />
 );
 
-// Stats Configuration
+const CollaborationInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <ToggleGroup
+    ref={inputRef}
+    value={value}
+    onValueChange={onChange}
+    type="single"
+    className="w-full justify-start space-x-4"
+  >
+    <ToggleGroupItem value="yes">Yes</ToggleGroupItem>
+    <ToggleGroupItem value="no">No</ToggleGroupItem>
+  </ToggleGroup>
+);
+
+const MentorshipInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <ToggleGroup
+    ref={inputRef}
+    value={value}
+    onValueChange={onChange}
+    type="single"
+    className="w-full justify-start space-x-4"
+  >
+    <ToggleGroupItem value="mentor">Willing to Mentor</ToggleGroupItem>
+    <ToggleGroupItem value="mentee">Looking for Mentor</ToggleGroupItem>
+    <ToggleGroupItem value="both">Both</ToggleGroupItem>
+  </ToggleGroup>
+);
+
+const OpenSourceInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <ToggleGroup
+    ref={inputRef}
+    value={value}
+    onValueChange={onChange}
+    type="single"
+    className="w-full justify-start space-x-4"
+  >
+    <ToggleGroupItem value="yes">Yes</ToggleGroupItem>
+    <ToggleGroupItem value="no">No</ToggleGroupItem>
+  </ToggleGroup>
+);
+
+const ContactPreferencesInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <Textarea
+    ref={inputRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={onKeyDown}
+    placeholder="How should people reach out to you?"
+    className="w-full h-32"
+  />
+);
+
+const AccentColorInput: React.FC<StepComponentProps> = ({
+  value,
+  onChange,
+  onKeyDown,
+  inputRef,
+}) => (
+  <ColorPicker value={value} onChange={onChange} label="Choose accent color" />
+);
+
 const StatsConfigInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
 }) => {
-  const columnSections = [
-    // Column 1: Stats Selection
-    {
-      sections: [
-        {
-          title: "Stats Selection",
-          items: [
-            {
-              label: "GitHub Stats",
-              value: value?.selectedStats || [],
-              isArray: true,
-              isMultiSelect: true,
-            },
-          ],
-        },
-      ],
-    },
-    // Column 2: Graph Configuration
-    {
-      sections: [
-        {
-          title: "Graph Configuration",
-          items: [
-            {
-              label: "Graph Height",
-              value: value?.graphHeight || 200,
-              isSlider: true,
-            },
-          ],
-        },
-      ],
-    },
-    // Column 3: Preview
-    {
-      sections: [
-        {
-          title: "Preview",
-          items: [
-            {
-              label: "Selected Stats",
-              value: "Your GitHub stats will be displayed here",
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  const [selectedStats, setSelectedStats] = useState(
+    value?.selectedStats || []
+  );
+
+  const handleStatsSelection = (stats: string[]) => {
+    setSelectedStats(stats);
+    onChange({ ...value, selectedStats: stats });
+  };
 
   return (
-    <div className="w-full h-full">
-      <div className="grid grid-cols-3 gap-6">
-        {columnSections.map((column, columnIndex) => (
-          <Card key={columnIndex} className="h-fit">
-            <CardContent className="p-6 space-y-6">
-              {column.sections.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="space-y-4">
-                  <h3 className="text-xl font-bold">{section.title}</h3>
-                  <div className="space-y-4">
-                    {section.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground">
-                            {item.label}
-                          </span>
-                        </div>
-                        <div className="text-sm">
-                          {item.isMultiSelect ? (
-                            <MultiSelect
-                              ref={inputRef}
-                              value={value?.selectedStats || []}
-                              onChange={(selectedStats) =>
-                                onChange({ ...value, selectedStats })
-                              }
-                              onKeyDown={onKeyDown}
-                              options={[
-                                "Overall Stats",
-                                "Top Languages",
-                                "Streak Stats",
-                                "Contribution Graph",
-                                "Trophy Showcase",
-                                "Activity Graph",
-                              ]}
-                              placeholder="Select stats to display"
-                              className="w-full"
-                            />
-                          ) : item.isSlider ? (
-                            <div className="space-y-2">
-                              <div className="flex justify-between items-center">
-                                <span className="text-sm text-muted-foreground">
-                                  {value?.graphHeight || 200}px
-                                </span>
-                              </div>
-                              <Slider
-                                value={[value?.graphHeight || 200]}
-                                onValueChange={(values) =>
-                                  onChange({ ...value, graphHeight: values[0] })
-                                }
-                                min={100}
-                                max={300}
-                                step={10}
-                              />
-                            </div>
-                          ) : (
-                            <p className="text-foreground">
-                              {typeof item.value === "string"
-                                ? item.value
-                                : "Not set"}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+    <div className="space-y-6">
+      <MultiSelect
+        ref={inputRef}
+        value={selectedStats}
+        onChange={handleStatsSelection}
+        options={[
+          "GitHub Stats Card",
+          "Top Languages Card",
+          "GitHub Streak Stats",
+        ]}
+        placeholder="Select up to 3 stats to display"
+        maxSelect={3}
+        className="w-full"
+      />
+
+      {selectedStats.map(
+        (
+          stat:
+            | boolean
+            | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+            | Iterable<React.ReactNode>
+            | Promise<React.AwaitedReactNode>
+            | React.Key
+            | null
+            | undefined
+        ) => (
+          <Card key={stat}>
+            <CardHeader>
+              <CardTitle>{stat} Configuration</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ColorPicker
+                value={value?.[`${stat}Color`] || "#000000"}
+                onChange={(color) =>
+                  onChange({ ...value, [`${stat}Color`]: color })
+                }
+                label="Theme Color"
+              />
             </CardContent>
           </Card>
-        ))}
-      </div>
+        )
+      )}
     </div>
   );
 };
 
-// Define all steps
 const steps = [
   {
     title: "Professional Title",
@@ -444,39 +394,29 @@ const steps = [
     component: ProfessionalTitleInput,
   },
   {
-    title: "Current Work Focus",
-    key: "workFocus",
-    component: WorkFocusInput,
+    title: "Years of Experience",
+    key: "yearsExperience",
+    component: YearsExperienceInput,
   },
   {
-    title: "Areas of Expertise",
-    key: "expertise",
-    component: ExpertiseInput,
+    title: "Current Organization",
+    key: "organization",
+    component: OrganizationInput,
   },
   {
-    title: "Learning Goals",
-    key: "learningGoals",
-    component: LearningGoalsInput,
+    title: "LinkedIn Profile",
+    key: "linkedIn",
+    component: LinkedInInput,
   },
   {
-    title: "Collaboration Interests",
-    key: "collaborationInterests",
-    component: CollaborationInterestsInput,
+    title: "Professional Summary",
+    key: "summary",
+    component: ProfessionalSummaryInput,
   },
   {
-    title: "Seeking Help With",
-    key: "helpTopics",
-    component: HelpTopicsInput,
-  },
-  {
-    title: "Ask Me About",
-    key: "expertiseTopics",
-    component: ExpertiseTopicsInput,
-  },
-  {
-    title: "Fun Facts",
-    key: "funFacts",
-    component: FunFactsInput,
+    title: "Time Zone",
+    key: "timeZone",
+    component: TimeZoneInput,
   },
   {
     title: "Pronouns",
@@ -489,63 +429,87 @@ const steps = [
     component: LanguagesInput,
   },
   {
-    title: "Time Zone",
-    key: "timeZone",
-    component: TimeZoneInput,
+    title: "Areas of Expertise",
+    key: "expertise",
+    component: ExpertiseInput,
   },
   {
-    title: "Availability",
-    key: "availability",
-    component: AvailabilityInput,
+    title: "Recent Achievements",
+    key: "achievements",
+    component: RecentAchievementsInput,
   },
   {
-    title: "Theme Customization",
-    key: "theme",
-    component: ThemeCustomizationInput,
+    title: "Open to Collaborate?",
+    key: "collaboration",
+    component: CollaborationInput,
   },
   {
-    title: "Stats Configuration",
-    key: "stats",
+    title: "Mentorship Preferences",
+    key: "mentorship",
+    component: MentorshipInput,
+  },
+  {
+    title: "Open Source Interest",
+    key: "openSource",
+    component: OpenSourceInput,
+  },
+  {
+    title: "Contact Preferences",
+    key: "contactPreferences",
+    component: ContactPreferencesInput,
+  },
+  {
+    title: "Accent Color",
+    key: "accentColor",
+    component: AccentColorInput,
+  },
+  {
+    title: "GitHub Stats Configuration",
+    key: "statsConfig",
     component: StatsConfigInput,
   },
-
   {
-    title: "Review your profile information",
+    title: "Fun Facts",
+    key: "funFacts",
+    component: FunFactsInput,
+  },
+  {
+    title: "Use Emojis?",
+    key: "useEmojis",
+    component: EmojiToggleInput,
+  },
+  {
+    title: "Animated SVG",
+    key: "animatedSvg",
+    component: AnimatedSvgToggleInput,
+  },
+  {
+    title: "Review your profile",
     key: "review",
     component: ProfileReview,
   },
 ];
 
-export default function CreatePage({
-  searchParams,
-}: {
-  searchParams: { step?: string };
-}) {
+interface CreatePageProps {
+  searchParams: {
+    step?: string;
+  };
+}
+
+export default function CreatePage({ searchParams }: CreatePageProps) {
   const { state, dispatch } = useForm();
   const router = useRouter();
-  const [initialLoad, setInitialLoad] = React.useState(true);
-
-  // Set initial step from searchParams or start from beginning
   const initialStep = searchParams.step ? parseInt(searchParams.step) : 1;
-  const [currentStep, setCurrentStep] = React.useState(initialStep);
-
-  React.useEffect(() => {
-    if (initialLoad && state) {
-      setInitialLoad(false);
-    }
-  }, [state, initialLoad]);
 
   const handleSubmit = async (formData: any) => {
-    console.log("Form submitted:", formData);
     dispatch({ type: "SET_FORM_DATA", payload: formData });
     router.push("/preview");
   };
 
   const handleStepChange = (step: number, value: any, key: string) => {
-    console.log(`Step ${step} changed:`, { key, value });
     dispatch({
       type: "UPDATE_FIELD",
-      payload: { field: key as keyof FormState, value },
+      payload: { field: key, value },
     });
   };
 
@@ -555,7 +519,7 @@ export default function CreatePage({
         steps={steps}
         onSubmit={handleSubmit}
         onStepChange={handleStepChange}
-        initialStep={currentStep}
+        initialStep={initialStep}
         initialFormData={state}
       />
     </div>
