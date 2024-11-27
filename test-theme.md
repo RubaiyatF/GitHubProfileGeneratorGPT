@@ -9,13 +9,14 @@
 </picture>
 
 <!-- Profile Views Counter -->
+
 ![](https://komarev.com/ghpvc/?username=b0ney-1&color=00d73d&style=flat&label=PROFILE+VIEWS)
 
 <!-- Typing SVG -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=ffffff&background=transparent&center=true&vCenter=true&random=false&width=435&lines=Full+Stack+Developer;Open+Source+Enthusiast;Always+Learning+New+Things" />
-  <source media="(prefers-color-scheme: light)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&background=transparent&center=true&vCenter=true&random=false&width=435&lines=Full+Stack+Developer;Open+Source+Enthusiast;Always+Learning+New+Things" />
-  <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&background=transparent&center=true&vCenter=true&random=false&width=435&lines=Full+Stack+Developer;Open+Source+Enthusiast;Always+Learning+New+Things" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=ffffff&center=true&vCenter=true&random=false&width=435&lines=Full+Stack+Developer;Open+Source+Enthusiast;Always+Learning+New+Things" />
+  <source media="(prefers-color-scheme: light)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&center=true&vCenter=true&random=false&width=435&lines=Full+Stack+Developer;Open+Source+Enthusiast;Always+Learning+New+Things" />
+  <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&center=true&vCenter=true&random=false&width=435&lines=Full+Stack+Developer;Open+Source+Enthusiast;Always+Learning+New+Things" />
 </picture>
 
 </div>
@@ -56,7 +57,9 @@
 </p>
 
 <!-- Skills Section -->
+
 ## 💻 Tech Stack
+
 <div align="center">
 
 <!-- Dark Mode -->
@@ -108,7 +111,9 @@
 </div>
 
 <!-- Contact Section -->
+
 ## 🤝 Connect With Me
+
 <div align="center">
   
 <picture>
