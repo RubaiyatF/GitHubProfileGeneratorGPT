@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import ComboTagSelector from "@/components/ui/ComboTagSelector";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AnimatedNumberInput } from "../ui/animated-number";
 import { AnimatedSlider } from "../ui/animated-slider";
-import { toast } from "sonner";
 import spacetime from "spacetime";
 import {
   Select,
@@ -19,7 +20,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  MultiSelector,
+  MultiSelectorTrigger,
+  MultiSelectorInput,
+  MultiSelectorContent,
+  MultiSelectorList,
+  MultiSelectorItem,
+} from "@/components/ui/multi-select";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface StepComponentProps {
   value: any;
@@ -27,6 +57,7 @@ interface StepComponentProps {
   onKeyDown: (e: React.KeyboardEvent) => void;
   inputRef: React.RefObject<any>;
   onStepChange?: (e: React.KeyboardEvent) => void;
+  formData?: any;
 }
 
 // Professional Information Inputs
@@ -289,27 +320,94 @@ const PronounsInput: React.FC<StepComponentProps> = ({
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <ToggleGroup
-      ref={inputRef}
-      value={value}
-      onValueChange={onChange}
-      type="single"
-      className="w-full justify-start space-x-4 py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200"
-    >
-      <ToggleGroupItem value="he/him">He/Him</ToggleGroupItem>
-      <ToggleGroupItem value="she/her">She/Her</ToggleGroupItem>
-      <ToggleGroupItem value="they/them">They/Them</ToggleGroupItem>
-      <ToggleGroupItem value="custom">Custom</ToggleGroupItem>
-    </ToggleGroup>
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        press Tab to navigate ⇥
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  const [customPronoun, setCustomPronoun] = useState(
+    value?.type === "custom" ? value.value : ""
+  );
+
+  const handlePronounChange = (type: string) => {
+    if (type === "custom") {
+      onChange({ type, value: customPronoun });
+    } else {
+      onChange({ type, value: type });
+    }
+  };
+
+  const handleCustomPronounChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newValue = e.target.value;
+    setCustomPronoun(newValue);
+    onChange({ type: "custom", value: newValue });
+  };
+
+  return (
+    <div className="w-full space-y-6">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold text-center">Pronouns</h3>
+        <p className="text-sm text-muted-foreground text-center">
+          How would you like to be referred to?
+        </p>
+      </div>
+
+      <div className="flex flex-col items-center space-y-4">
+        <ToggleGroup
+          type="single"
+          value={value?.type || ""}
+          onValueChange={handlePronounChange}
+          className="justify-center flex-wrap gap-4"
+        >
+          <ToggleGroupItem
+            value="he/him"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            he/him
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="she/her"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            she/her
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="they/them"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            they/them
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="custom"
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            custom
+          </ToggleGroupItem>
+        </ToggleGroup>
+
+        <AnimatePresence mode="wait">
+          {value?.type === "custom" && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -20 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -20 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="w-full max-w-xs overflow-hidden"
+            >
+              <Input
+                ref={inputRef}
+                type="text"
+                placeholder="Enter your pronouns"
+                value={customPronoun}
+                onChange={handleCustomPronounChange}
+                onKeyDown={onKeyDown}
+                className="w-full"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
 
 const LANGUAGES = [
   { value: "english", label: "English" },
@@ -341,15 +439,26 @@ const LanguagesInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <MultiSelect
+    <MultiSelector
+      values={value || []}
+      onValuesChange={onChange}
+      loop={false}
       ref={inputRef}
-      value={value || []}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      options={LANGUAGES.map((lang) => lang.value)}
-      placeholder="Select languages you speak"
-      className="w-full py-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent focus-within:border-2 focus-within:border-black dark:focus-within:border-white shadow-sm hover:shadow-md transition-all duration-200"
-    />
+      autoFocus={true}
+    >
+      <MultiSelectorTrigger>
+        <MultiSelectorInput placeholder="Select languages you speak" />
+      </MultiSelectorTrigger>
+      <MultiSelectorContent>
+        <MultiSelectorList>
+          {LANGUAGES.map((lang, i) => (
+            <MultiSelectorItem key={i} value={lang.value}>
+              {lang.label}
+            </MultiSelectorItem>
+          ))}
+        </MultiSelectorList>
+      </MultiSelectorContent>
+    </MultiSelector>
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
         Enter to select ↵
@@ -365,21 +474,32 @@ const ExpertiseInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <MultiSelect
+    <MultiSelector
+      values={value || []}
+      onValuesChange={onChange}
+      loop={false}
       ref={inputRef}
-      value={value || []}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      options={[
-        "Frontend Development",
-        "Backend Development",
-        "DevOps",
-        "Cloud Computing",
-        "Machine Learning",
-      ]}
-      placeholder="Select your areas of expertise"
-      className="w-full py-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent focus-within:border-2 focus-within:border-black dark:focus-within:border-white shadow-sm hover:shadow-md transition-all duration-200"
-    />
+      autoFocus={true}
+    >
+      <MultiSelectorTrigger>
+        <MultiSelectorInput placeholder="Select your areas of expertise" />
+      </MultiSelectorTrigger>
+      <MultiSelectorContent>
+        <MultiSelectorList>
+          {[
+            "Frontend Development",
+            "Backend Development",
+            "DevOps",
+            "Cloud Computing",
+            "Machine Learning",
+          ].map((expertise, i) => (
+            <MultiSelectorItem key={i} value={expertise}>
+              {expertise}
+            </MultiSelectorItem>
+          ))}
+        </MultiSelectorList>
+      </MultiSelectorContent>
+    </MultiSelector>
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
         Enter to select ↵
@@ -487,112 +607,407 @@ const OpenSourceInput: React.FC<StepComponentProps> = ({
   </div>
 );
 
+interface ContactPreferences {
+  email: boolean;
+  linkedin: boolean;
+  calendly: boolean;
+  calendlyLink?: string;
+}
+
 const ContactPreferencesInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <Textarea
-      ref={inputRef}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onKeyDown={onKeyDown}
-      placeholder="How should people reach out to you?"
-      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-4xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
-    />
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        Shift + Enter for new line, Enter to continue
-      </span>
-    </kbd>
-  </div>
-);
+  formData,
+  onStepChange,
+}) => {
+  const [preferences, setPreferences] = useState<ContactPreferences>(
+    value || {
+      email: false,
+      linkedin: false,
+      calendly: false,
+    }
+  );
+  const [calendlyInput, setCalendlyInput] = useState(
+    preferences.calendlyLink || ""
+  );
+
+  const handlePreferenceChange = (
+    key: keyof ContactPreferences,
+    checked: boolean
+  ) => {
+    if (key === "linkedin" && checked) {
+      // Check if LinkedIn value exists in form data
+      if (!formData?.linkedIn) {
+        toast.error("Please fill in your LinkedIn profile first");
+        onStepChange?.(4);
+        return;
+      }
+    }
+
+    const newPreferences = {
+      ...preferences,
+      [key]: checked,
+    };
+
+    if (key === "calendly" && !checked) {
+      delete newPreferences.calendlyLink;
+      setCalendlyInput("");
+    }
+
+    setPreferences(newPreferences);
+    onChange(newPreferences);
+  };
+
+  const handleCalendlyInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newLink = e.target.value;
+    setCalendlyInput(newLink);
+    setPreferences((prev) => ({
+      ...prev,
+      calendlyLink: newLink,
+    }));
+    onChange({
+      ...preferences,
+      calendlyLink: newLink,
+    });
+  };
+
+  return (
+    <div className="relative w-full px-12 py-12">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="email" className="text-lg">
+            Email Contact
+          </Label>
+          <Switch
+            id="email"
+            checked={preferences.email}
+            onCheckedChange={(checked) =>
+              handlePreferenceChange("email", checked)
+            }
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="linkedin" className="text-lg">
+            LinkedIn Contact
+          </Label>
+          <Switch
+            id="linkedin"
+            checked={preferences.linkedin}
+            onCheckedChange={(checked) =>
+              handlePreferenceChange("linkedin", checked)
+            }
+          />
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="calendly" className="text-lg">
+              Calendly Meeting
+            </Label>
+            <Switch
+              id="calendly"
+              checked={preferences.calendly}
+              onCheckedChange={(checked) =>
+                handlePreferenceChange("calendly", checked)
+              }
+            />
+          </div>
+
+          {preferences.calendly && (
+            <Input
+              type="text"
+              placeholder="Enter your Calendly link"
+              value={calendlyInput}
+              onChange={handleCalendlyInputChange}
+              className="w-full"
+            />
+          )}
+        </div>
+      </div>
+
+      <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          Tab to navigate, Enter to continue ↵
+        </span>
+      </kbd>
+    </div>
+  );
+};
 
 const AccentColorInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <ColorPicker
-      value={value}
-      onChange={onChange}
-      label="Choose accent color"
-      className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200"
-    />
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        click to select
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  return (
+    <div className="w-full px-12 py-12">
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground mb-4">
+          Choose an accent color for your profile. The default color is black
+          (#000000).
+        </p>
+        <ColorPicker
+          value={value || "#000000"}
+          onChange={onChange}
+          label="Select color"
+        />
+      </div>
+    </div>
+  );
+};
+
+interface StatVariant {
+  id: string;
+  title: string;
+  imageUrl: string;
+}
+
+interface StatType {
+  id: string;
+  title: string;
+  description: string;
+  variants: StatVariant[];
+}
+
+interface StatsConfig {
+  [key: string]: {
+    enabled: boolean;
+    variant?: string;
+  };
+}
+
+const GITHUB_STATS: StatType[] = [
+  {
+    id: "github-stats",
+    title: "GitHub Statistics",
+    description: "Show your GitHub activity statistics",
+    variants: [
+      {
+        id: "stats-default",
+        title: "Default Style",
+        imageUrl:
+          "https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=000000&icon_color=00d73d&text_color=000000&bg_color=00000000",
+      },
+      {
+        id: "stats-dark",
+        title: "Dark Style",
+        imageUrl:
+          "https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=ffffff&icon_color=00d73d&text_color=ffffff&bg_color=00000000",
+      },
+      {
+        id: "stats-colorful",
+        title: "Colorful Style",
+        imageUrl:
+          "https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=00d73d&icon_color=00d73d&text_color=000000&bg_color=00000000",
+      },
+    ],
+  },
+  {
+    id: "language-stats",
+    title: "Top Languages",
+    description: "Display your most used programming languages",
+    variants: [
+      {
+        id: "lang-default",
+        title: "Default Style",
+        imageUrl:
+          "https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=000000&icon_color=00d73d&text_color=000000&bg_color=00000000",
+      },
+    ],
+  },
+  {
+    id: "streak-stats",
+    title: "GitHub Streak",
+    description: "Show your GitHub streak statistics",
+    variants: [
+      {
+        id: "streak-default",
+        title: "Default Style",
+        imageUrl:
+          "https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=000000&fire=00d73d&currStreakNum=000000&sideNums=000000&currStreakLabel=000000&sideLabels=000000&dates=000000&stroke=000000",
+      },
+    ],
+  },
+  {
+    id: "contribution-stats",
+    title: "Contribution Graph",
+    description: "Display your contribution activity graph",
+    variants: [
+      {
+        id: "contrib-default",
+        title: "Default Style",
+        imageUrl:
+          "https://github-readme-activity-graph.vercel.app/graph?username=b0ney-1&bg_color=00000000&color=000000&line=000000&point=000000&area_color=000000&area=true&hide_border=true",
+      },
+    ],
+  },
+  {
+    id: "trophy-stats",
+    title: "GitHub Trophies",
+    description: "Showcase your GitHub achievements",
+    variants: [
+      {
+        id: "trophy-default",
+        title: "Default Style",
+        imageUrl:
+          "https://github-profile-trophy.vercel.app/?username=b0ney-1&theme=flat&title_color=000000&text_color=000000&bg_color=00000000&no-frame=true",
+      },
+    ],
+  },
+];
 
 const StatsConfigInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
-  onKeyDown,
-  inputRef,
+  formData,
 }) => {
-  const [selectedStats, setSelectedStats] = useState(
-    value?.selectedStats || []
+  const accentColor = formData?.accentColor || "#000000";
+  const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>(
+    GITHUB_STATS.reduce(
+      (acc, stat) => ({
+        ...acc,
+        [stat.id]: true,
+      }),
+      {}
+    )
   );
 
-  const handleStatsSelection = (stats: string[]) => {
-    setSelectedStats(stats);
-    onChange({ ...value, selectedStats: stats });
-  };
+  const handleToggleStat = useCallback(
+    (statId: string, enabled: boolean) => {
+      const newConfig = {
+        ...value,
+        [statId]: {
+          ...value[statId],
+          enabled,
+        },
+      };
+      onChange(newConfig);
+    },
+    [value, onChange]
+  );
+
+  const handleImageLoad = useCallback((id: string) => {
+    setIsLoading((prev) => ({
+      ...prev,
+      [id]: false,
+    }));
+  }, []);
+
+  const getPreviewUrl = useCallback(
+    (statId: string) => {
+      const colorHex = accentColor.replace("#", "");
+
+      switch (statId) {
+        case "github-stats":
+          return `https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=${colorHex}&icon_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
+        case "language-stats":
+          return `https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
+        case "streak-stats":
+          return `https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=${colorHex}&fire=${colorHex}&currStreakNum=${colorHex}&sideNums=${colorHex}&currStreakLabel=${colorHex}&sideLabels=${colorHex}&dates=${colorHex}&stroke=${colorHex}&background=ffffff00`;
+        case "contribution-stats":
+          return `https://github-readme-activity-graph.vercel.app/graph?username=b0ney-1&bg_color=ffffff00&color=${colorHex}&line=${colorHex}&point=${colorHex}&area_color=${colorHex}&area=true&hide_border=true`;
+        case "trophy-stats":
+          return `https://github-profile-trophy.vercel.app/?username=b0ney-1&theme=flat&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00&no-frame=true`;
+        default:
+          return "";
+      }
+    },
+    [accentColor]
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="relative w-full px-12 py-12">
-        <MultiSelect
-          ref={inputRef}
-          value={selectedStats}
-          onChange={handleStatsSelection}
-          onKeyDown={onKeyDown}
-          options={[
-            "GitHub Stats Card",
-            "Top Languages Card",
-            "GitHub Streak Stats",
-          ]}
-          placeholder="Select up to 3 stats to display"
-          className="w-full py-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent focus-within:border-2 focus-within:border-black dark:focus-within:border-white shadow-sm hover:shadow-md transition-all duration-200"
-        />
-        <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-          <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-            Enter to select ↵
-          </span>
-        </kbd>
+    <div className="w-full flex flex-col space-y-6">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold text-center">
+          GitHub Profile Statistics
+        </h3>
+        <p className="text-sm text-muted-foreground text-center">
+          Select the statistics you want to display on your profile
+        </p>
       </div>
 
-      {selectedStats.map((stat) => (
-        <Card key={stat} className="relative overflow-hidden">
-          <CardHeader>
-            <CardTitle>{stat} Configuration</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="relative w-full px-12 py-12">
-              <ColorPicker
-                value={value?.[`${stat}Color`] || "#000000"}
-                onChange={(color) =>
-                  onChange({ ...value, [`${stat}Color`]: color })
-                }
-                label="Theme Color"
-                className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200"
-              />
-              <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-                <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-                  click to select
-                </span>
-              </kbd>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {GITHUB_STATS.map((stat) => {
+          const isEnabled = value?.[stat.id]?.enabled || false;
+          return (
+            <Dialog key={stat.id}>
+              <DialogTrigger asChild>
+                <div
+                  className={cn(
+                    "group relative rounded-lg border-2 transition-all duration-200 hover:shadow-md cursor-pointer",
+                    "bg-background dark:bg-background/5",
+                    isEnabled
+                      ? "border-primary shadow-md bg-primary/5 dark:bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  )}
+                >
+                  {/* Preview Image */}
+                  <div className="p-4 pb-2">
+                    <div className="aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-white/5">
+                      {isLoading[stat.id] && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      )}
+                      <img
+                        src={getPreviewUrl(stat.id)}
+                        alt={stat.title}
+                        className="w-full h-full object-contain p-2"
+                        onLoad={() => handleImageLoad(stat.id)}
+                        onError={() => handleImageLoad(stat.id)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-4 pt-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <h4 className="font-medium text-sm">{stat.title}</h4>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {stat.description}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={isEnabled}
+                        onCheckedChange={(checked) =>
+                          handleToggleStat(stat.id, checked)
+                        }
+                        onClick={(e) => e.stopPropagation()}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Selected Indicator */}
+                  {isEnabled && (
+                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
+                  )}
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>{stat.title}</DialogTitle>
+                  <DialogDescription>{stat.description}</DialogDescription>
+                </DialogHeader>
+                <div className="w-full aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-white/5">
+                  <img
+                    src={getPreviewUrl(stat.id)}
+                    alt={stat.title}
+                    className="w-full h-full object-contain p-4"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          );
+        })}
+      </div>
     </div>
   );
 };
