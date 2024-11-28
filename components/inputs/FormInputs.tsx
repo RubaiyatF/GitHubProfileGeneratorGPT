@@ -190,7 +190,7 @@ const LinkedInInput: React.FC<StepComponentProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="LinkedIn profile URL (optional)"
+        placeholder="linkedin.com/in/your-user-name (optional)"
         className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
       />
       <div className="absolute right-10 bottom-2 flex  items-end gap-1">
@@ -451,6 +451,7 @@ const LanguagesInput: React.FC<StepComponentProps> = ({
   return (
     <div className="relative w-full px-12 py-12">
       <MultipleSelector
+        ref={multipleSelectorRef}
         value={value || []}
         defaultOptions={LANGUAGES}
         placeholder="Select languages you speak..."
@@ -524,6 +525,7 @@ const ExpertiseInput: React.FC<StepComponentProps> = ({
   return (
     <div className="relative w-full px-12 py-12">
       <MultipleSelector
+        ref={multipleSelectorRef}
         value={value || []}
         defaultOptions={EXPERTISE}
         placeholder="Select your areas of expertise..."

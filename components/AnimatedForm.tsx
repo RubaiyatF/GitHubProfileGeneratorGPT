@@ -493,7 +493,7 @@ export const AnimatedForm: React.FC<{
             />
           </AnimatePresence>
           <motion.div
-            className="flex justify-end gap-6 mt-12"
+            className="flex justify-end gap-6 mt-12 relative z-50"
             variants={animations.itemVariants}
           >
             {ReviewToggle && step < steps.length && (

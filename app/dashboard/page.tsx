@@ -138,7 +138,7 @@ export default function Home() {
           <div className="w-full max-w-[1400px] mx-auto">
             <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 py-8 lg:py-16">
               <motion.div
-                className="flex items-center justify-center w-full lg:w-auto shrink-0"
+                className="flex items-center justify-center w-full lg:w-auto shrink-0 lg:flex-grow"
                 variants={logoVariants}
               >
                 <AnimatedCatLogo />

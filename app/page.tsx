@@ -39,12 +39,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-[1400px] mx-auto">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 py-8 lg:py-16">
-          <div className="flex items-center justify-center w-full lg:w-auto shrink-0">
+          <div className="flex items-center justify-center w-full lg:w-auto shrink-0 lg:flex-grow">
             <AnimatedCatLogo />
           </div>
           <div className="flex flex-col items-center lg:items-start justify-center gap-2 lg:gap-8 w-full lg:max-w-2xl">
             <div className="flex flex-col items-center lg:items-start gap-4 w-full">
-              <h1 className="text-center lg:text-left text-4xl lg:text-7xl font-bold text-foreground">
+              <h1 className="text-center lg:text-left text-8xl lg:text-7xl font-bold text-foreground">
                 GitHub Profile Generator
               </h1>
               <p className="text-center lg:text-left text-lg lg:text-2xl text-muted-foreground">
