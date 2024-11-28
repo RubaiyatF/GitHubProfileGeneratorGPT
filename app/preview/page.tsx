@@ -59,8 +59,13 @@ export default function PreviewPage() {
   const handleDownload = () => {
     if (!content) return;
 
+    // Remove markdown code block delimiters
+    const cleanContent = content
+      .replace(/^```markdown\n/, "")
+      .replace(/\n```$/, "");
+
     // Create a blob from the content
-    const blob = new Blob([content], { type: "text/markdown" });
+    const blob = new Blob([cleanContent], { type: "text/markdown" });
     const url = window.URL.createObjectURL(blob);
 
     // Create a temporary anchor element and trigger download

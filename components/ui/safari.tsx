@@ -9,6 +9,7 @@ import "katex/dist/katex.min.css";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Users, Building2, MapPin, Link as LinkIcon } from "lucide-react";
 
 export interface SafariProps extends SVGProps<SVGSVGElement> {
   url?: string;
@@ -23,6 +24,175 @@ export interface SafariProps extends SVGProps<SVGSVGElement> {
 interface DivProps extends React.HTMLAttributes<HTMLDivElement> {
   xmlns?: string;
 }
+
+const GitHubProfileLayout = ({ content }: { content: string }) => {
+  return (
+    <div className="flex w-full min-h-full bg-white dark:bg-[#0D1117]">
+      {/* Left Sidebar */}
+      <div className="w-1/4 min-w-[296px] p-4 border-r border-gray-200 dark:border-gray-800">
+        {/* Profile Picture */}
+        <div className="mb-4">
+          <img
+            src="/api/placeholder/296/296"
+            alt="Profile"
+            className="w-full rounded-full border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-700 transition-colors"
+          />
+        </div>
+
+        {/* Name & Bio */}
+        <div className="mb-4">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Display Name
+          </h1>
+          <div className="text-gray-600 dark:text-gray-400 mb-4">username</div>
+          <div className="text-gray-700 dark:text-gray-300">Bio text here</div>
+        </div>
+
+        {/* Stats */}
+        <div className="flex items-center mb-4 text-sm text-gray-600 dark:text-gray-400">
+          <Users className="w-4 h-4 mr-1" />
+          <span className="mr-3">
+            <strong className="text-gray-900 dark:text-white">100</strong>{" "}
+            followers
+          </span>
+          ·
+          <span className="ml-3">
+            <strong className="text-gray-900 dark:text-white">50</strong>{" "}
+            following
+          </span>
+        </div>
+
+        {/* Additional Info */}
+        <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center">
+            <Building2 className="w-4 h-4 mr-2" />
+            Organization
+          </div>
+          <div className="flex items-center">
+            <MapPin className="w-4 h-4 mr-2" />
+            Location
+          </div>
+          <div className="flex items-center">
+            <LinkIcon className="w-4 h-4 mr-2" />
+            Website
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 min-w-0 p-4 overflow-y-auto">
+        {/* Profile README */}
+        <div className="markdown-body w-full prose dark:prose-invert max-w-none">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeRaw, rehypeKatex]}
+            className="text-base"
+            components={{
+              pre: ({ node, children, ...props }) => (
+                <pre
+                  {...props}
+                  className="bg-[#f6f8fa] dark:bg-[#161B22] rounded-md p-4 overflow-x-auto"
+                >
+                  {children}
+                </pre>
+              ),
+              code: ({ node, inline, className, children, ...props }: any) => {
+                const match = /language-(\w+)/.exec(className || "");
+                return !inline ? (
+                  <code
+                    className={cn(
+                      match ? `language-${match[1]}` : "",
+                      "text-black dark:text-white block"
+                    )}
+                    {...props}
+                  >
+                    {children}
+                  </code>
+                ) : (
+                  <code
+                    className="bg-[#f6f8fa] dark:bg-[#161B22] px-1 py-0.5 rounded-md text-sm text-black dark:text-white"
+                    {...props}
+                  >
+                    {children}
+                  </code>
+                );
+              },
+              h1: ({ node, ...props }) => (
+                <h1
+                  {...props}
+                  className="text-2xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
+                />
+              ),
+              h2: ({ node, ...props }) => (
+                <h2
+                  {...props}
+                  className="text-xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
+                />
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 {...props} className="text-lg font-bold mb-4 mt-6" />
+              ),
+              p: ({ node, ...props }) => (
+                <p {...props} className="mb-4 leading-relaxed" />
+              ),
+              ul: ({ node, ...props }) => (
+                <ul {...props} className="list-disc pl-6 mb-4" />
+              ),
+              ol: ({ node, ...props }) => (
+                <ol {...props} className="list-decimal pl-6 mb-4" />
+              ),
+              li: ({ node, ...props }) => <li {...props} className="mb-1" />,
+              blockquote: ({ node, ...props }) => (
+                <blockquote
+                  {...props}
+                  className="border-l-4 border-gray-200 dark:border-gray-700 pl-4 py-1 text-gray-600 dark:text-gray-300 italic"
+                />
+              ),
+              a: ({ node, ...props }) => (
+                <a
+                  {...props}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              ),
+              img: ({ node, ...props }) => (
+                <img
+                  {...props}
+                  className="max-w-full h-auto rounded-lg my-4"
+                  loading="lazy"
+                />
+              ),
+              div: ({ node, ...props }) => <div {...props} className="mb-4" />,
+              table: ({ node, ...props }) => (
+                <div className="overflow-x-auto mb-4">
+                  <table
+                    {...props}
+                    className="min-w-full border border-gray-200 dark:border-gray-700"
+                  />
+                </div>
+              ),
+              th: ({ node, ...props }) => (
+                <th
+                  {...props}
+                  className="border border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800"
+                />
+              ),
+              td: ({ node, ...props }) => (
+                <td
+                  {...props}
+                  className="border border-gray-200 dark:border-gray-700 px-4 py-2"
+                />
+              ),
+            }}
+          >
+            {content.replace(/^[`']{3}markdown\n|\n[`']{3}$/g, "")}
+          </ReactMarkdown>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Safari({
   content,
@@ -123,7 +293,7 @@ export default function Safari({
           </div>
         </foreignObject>
 
-        {/* Markdown content */}
+        {/* Content Area */}
         <foreignObject
           x="1"
           y="52"
@@ -145,121 +315,8 @@ export default function Safari({
                 </pre>
               </div>
             ) : (
-              // GitHub Preview
-              <div className="markdown-body w-full h-full p-8 prose dark:prose-invert max-w-none">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
-                  className="text-base"
-                  components={{
-                    pre: ({ node, children, ...props }) => (
-                      <pre
-                        {...props}
-                        className="bg-[#f6f8fa] dark:bg-[#161B22] rounded-md p-4 overflow-x-auto"
-                      >
-                        {children}
-                      </pre>
-                    ),
-                    code: ({
-                      node,
-                      inline,
-                      className,
-                      children,
-                      ...props
-                    }: any) => {
-                      const match = /language-(\w+)/.exec(className || "");
-                      return !inline ? (
-                        <code
-                          className={cn(
-                            match ? `language-${match[1]}` : "",
-                            "text-black dark:text-white block"
-                          )}
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      ) : (
-                        <code
-                          className="bg-[#f6f8fa] dark:bg-[#161B22] px-1 py-0.5 rounded-md text-sm text-black dark:text-white"
-                          {...props}
-                        >
-                          {children}
-                        </code>
-                      );
-                    },
-                    h1: ({ node, ...props }) => (
-                      <h1
-                        {...props}
-                        className="text-2xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
-                      />
-                    ),
-                    h2: ({ node, ...props }) => (
-                      <h2
-                        {...props}
-                        className="text-xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
-                      />
-                    ),
-                    h3: ({ node, ...props }) => (
-                      <h3 {...props} className="text-lg font-bold mb-4 mt-6" />
-                    ),
-                    p: ({ node, ...props }) => (
-                      <p {...props} className="mb-4 leading-relaxed" />
-                    ),
-                    ul: ({ node, ...props }) => (
-                      <ul {...props} className="list-disc pl-6 mb-4" />
-                    ),
-                    ol: ({ node, ...props }) => (
-                      <ol {...props} className="list-decimal pl-6 mb-4" />
-                    ),
-                    li: ({ node, ...props }) => (
-                      <li {...props} className="mb-1" />
-                    ),
-                    blockquote: ({ node, ...props }) => (
-                      <blockquote
-                        {...props}
-                        className="border-l-4 border-gray-200 dark:border-gray-700 pl-4 py-1 text-gray-600 dark:text-gray-300 italic"
-                      />
-                    ),
-                    a: ({ node, ...props }) => (
-                      <a
-                        {...props}
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      />
-                    ),
-                    img: ({ node, ...props }) => (
-                      <img
-                        {...props}
-                        className="max-w-full h-auto rounded-lg my-4"
-                        loading="lazy"
-                      />
-                    ),
-                    table: ({ node, ...props }) => (
-                      <div className="overflow-x-auto mb-4">
-                        <table
-                          {...props}
-                          className="min-w-full border border-gray-200 dark:border-gray-700"
-                        />
-                      </div>
-                    ),
-                    th: ({ node, ...props }) => (
-                      <th
-                        {...props}
-                        className="border border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800"
-                      />
-                    ),
-                    td: ({ node, ...props }) => (
-                      <td
-                        {...props}
-                        className="border border-gray-200 dark:border-gray-700 px-4 py-2"
-                      />
-                    ),
-                  }}
-                >
-                  {content.replace(/^[`']{3}markdown\n|\n[`']{3}$/g, "")}
-                </ReactMarkdown>
-              </div>
+              // GitHub Profile Layout
+              <GitHubProfileLayout content={content} />
             )}
           </div>
         </foreignObject>
