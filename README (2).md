@@ -8,14 +8,14 @@
 </picture>
 
 <!-- Profile Views Counter -->
-
 ![](https://komarev.com/ghpvc/?username=b0ney-1&color=7C3AED&style=flat&label=PROFILE+VIEWS)
+
 
 <!-- Typing SVG -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=ffffff&center=true&vCenter=true&random=false&width=435&lines=Web3%20content%20;Open%20Source%20Enthusiast;Always+Learning+New+Things" />
-  <source media="(prefers-color-scheme: light)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&center=true&vCenter=true&random=false&width=435&lines=Web3%20content%20;Open%20Source%20Enthusiast;Always+Learning+New+Things" />
-  <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&center=true&vCenter=true&random=false&width=435&lines=Web3%20content%20;Open%20Source%20Enthusiast;Always+Learning+New+Things" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=ffffff&center=true&vCenter=true&random=false&width=435&lines=Web3%20content%20%5C;Open Source Enthusiast;Always+Learning+New+Things" />
+  <source media="(prefers-color-scheme: light)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&center=true&vCenter=true&random=false&width=435&lines=Web3%20content%20%5C;Open Source Enthusiast;Always+Learning+New+Things" />
+  <img alt="Typing SVG" src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color=000000&center=true&vCenter=true&random=false&width=435&lines=Web3%20content%20%5C;Open Source Enthusiast;Always+Learning+New+Things" />
 </picture>
 
 </div>
@@ -23,21 +23,19 @@
 <br/>
 
 <!-- Professional Introduction -->
+ **Professional Introduction**
 
-**Professional Introduction**
+Hello there! I'm Boney Fernandez, a passionate Web3 content \ with 2 years of experience. Currently, I'm leveraging my skills at metaschool, where I contribute to cutting-edge projects. something 
 
-Hello there! I'm Boney Fernandez, a passionate Web3 content with 5 years of experience. Currently, I'm leveraging my skills at metaschool, where I contribute to cutting-edge projects. something
-
-**Notable Achievements:**
-
+ **Notable Achievements:**
 - something
 
-**Professional Engagement:**
-
+ **Professional Engagement:**
 - Open to collaborating on interesting projects
 - Available for mentoring
 - Active in open source communities
 - Timezone: Asia/Calcutta
+
 
 <!-- GitHub Stats Grid -->
 <div align="center">
@@ -60,6 +58,7 @@ Hello there! I'm Boney Fernandez, a passionate Web3 content with 5 years of expe
   </picture>
 </div>
 
+
 <!-- Languages Stats -->
 <div align="center">
   <picture>
@@ -68,6 +67,7 @@ Hello there! I'm Boney Fernandez, a passionate Web3 content with 5 years of expe
     <img width="60%" alt="Top Languages" src="https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=000000&text_color=000000&bg_color=00000000" />
   </picture>
 </div>
+
 
 <!-- Trophies -->
 <p align="center">
@@ -79,8 +79,7 @@ Hello there! I'm Boney Fernandez, a passionate Web3 content with 5 years of expe
 </p>
 
 <!-- Tech Stack -->
-
-## Tech Stack
+##  Tech Stack
 
 <div align="center">
 
@@ -140,10 +139,10 @@ Hello there! I'm Boney Fernandez, a passionate Web3 content with 5 years of expe
 </div>
 
 <!-- Contact Section -->
-
-## Connect With Me
+##  Connect With Me
 
 <div align="center">
+
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Email-%23ffffff.svg?style=flat&logo=gmail&logoColor=7C3AED" />

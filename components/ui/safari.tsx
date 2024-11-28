@@ -91,67 +91,94 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
               pre: ({ node, children, ...props }) => (
                 <pre
                   {...props}
-                  className="bg-[#f6f8fa] dark:bg-[#161B22] rounded-md p-4 overflow-x-auto"
+                  className="bg-[#f6f8fa] dark:bg-[#161b22] rounded-md p-4 overflow-x-auto border border-[#d0d7de] dark:border-[#30363d]"
                 >
                   {children}
                 </pre>
               ),
               code: ({ node, inline, className, children, ...props }: any) => {
+                if (inline) {
+                  return (
+                    <code 
+                      className="bg-[#f6f8fa] dark:bg-[#161b22] px-1.5 py-0.5 rounded-md text-sm 
+                               border border-[#d0d7de] dark:border-[#30363d] text-[#24292f] dark:text-[#c9d1d9]"
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  );
+                }
                 const match = /language-(\w+)/.exec(className || "");
-                return !inline ? (
+                return (
                   <code
                     className={cn(
                       match ? `language-${match[1]}` : "",
-                      "text-black dark:text-white block"
+                      "text-[#24292f] dark:text-[#c9d1d9] block"
                     )}
-                    {...props}
-                  >
-                    {children}
-                  </code>
-                ) : (
-                  <code
-                    className="bg-[#f6f8fa] dark:bg-[#161B22] px-1 py-0.5 rounded-md text-sm text-black dark:text-white"
                     {...props}
                   >
                     {children}
                   </code>
                 );
               },
+              p: ({ node, children, ...props }) => (
+                <p 
+                  {...props} 
+                  className="mb-4 leading-[1.5] text-[#24292f] dark:text-[#c9d1d9]"
+                >
+                  {children}
+                </p>
+              ),
               h1: ({ node, ...props }) => (
                 <h1
                   {...props}
-                  className="text-2xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
+                  className="text-[32px] leading-[1.25] font-semibold mb-4 mt-6 pb-2 border-b border-[#d0d7de] dark:border-[#30363d] text-[#24292f] dark:text-[#c9d1d9]"
                 />
               ),
               h2: ({ node, ...props }) => (
                 <h2
                   {...props}
-                  className="text-xl font-bold mb-4 mt-6 pb-2 border-b border-gray-200 dark:border-gray-700"
+                  className="text-[24px] leading-[1.25] font-semibold mb-4 mt-6 pb-2 border-b border-[#d0d7de] dark:border-[#30363d] text-[#24292f] dark:text-[#c9d1d9]"
                 />
               ),
               h3: ({ node, ...props }) => (
-                <h3 {...props} className="text-lg font-bold mb-4 mt-6" />
-              ),
-              p: ({ node, ...props }) => (
-                <p {...props} className="mb-4 leading-relaxed" />
+                <h3 
+                  {...props} 
+                  className="text-[20px] leading-[1.25] font-semibold mb-4 mt-6 text-[#24292f] dark:text-[#c9d1d9]" 
+                />
               ),
               ul: ({ node, ...props }) => (
-                <ul {...props} className="list-disc pl-6 mb-4" />
+                <ul {...props} className="list-disc pl-[2em] mb-4 text-[#24292f] dark:text-[#c9d1d9]" />
               ),
               ol: ({ node, ...props }) => (
-                <ol {...props} className="list-decimal pl-6 mb-4" />
+                <ol {...props} className="list-decimal pl-[2em] mb-4 text-[#24292f] dark:text-[#c9d1d9]" />
               ),
-              li: ({ node, ...props }) => <li {...props} className="mb-1" />,
+              li: ({ node, checked, ...props }: any) => {
+                if (checked !== null) {
+                  return (
+                    <li className="flex items-start mb-1 text-[#24292f] dark:text-[#c9d1d9]">
+                      <input 
+                        type="checkbox" 
+                        checked={checked} 
+                        readOnly 
+                        className="mt-1 mr-2 rounded border-[#d0d7de] dark:border-[#30363d]"
+                      />
+                      <span>{props.children}</span>
+                    </li>
+                  );
+                }
+                return <li {...props} className="mb-1 text-[#24292f] dark:text-[#c9d1d9]" />;
+              },
               blockquote: ({ node, ...props }) => (
                 <blockquote
                   {...props}
-                  className="border-l-4 border-gray-200 dark:border-gray-700 pl-4 py-1 text-gray-600 dark:text-gray-300 italic"
+                  className="border-l-4 border-[#d0d7de] dark:border-[#30363d] pl-4 color-[#6e7781] dark:color-[#8b949e] mb-4"
                 />
               ),
               a: ({ node, ...props }) => (
                 <a
                   {...props}
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                  className="text-[#0969da] dark:text-[#58a6ff] hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 />
@@ -159,29 +186,28 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
               img: ({ node, ...props }) => (
                 <img
                   {...props}
-                  className="max-w-full h-auto rounded-lg my-4"
+                  className="max-w-full rounded-md mb-4"
                   loading="lazy"
                 />
               ),
-              div: ({ node, ...props }) => <div {...props} className="mb-4" />,
               table: ({ node, ...props }) => (
                 <div className="overflow-x-auto mb-4">
                   <table
                     {...props}
-                    className="min-w-full border border-gray-200 dark:border-gray-700"
+                    className="min-w-full border border-[#d0d7de] dark:border-[#30363d] border-collapse"
                   />
                 </div>
               ),
               th: ({ node, ...props }) => (
                 <th
                   {...props}
-                  className="border border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800"
+                  className="border border-[#d0d7de] dark:border-[#30363d] px-[13px] py-[6px] bg-[#f6f8fa] dark:bg-[#161b22] text-[#24292f] dark:text-[#c9d1d9]"
                 />
               ),
               td: ({ node, ...props }) => (
                 <td
                   {...props}
-                  className="border border-gray-200 dark:border-gray-700 px-4 py-2"
+                  className="border border-[#d0d7de] dark:border-[#30363d] px-[13px] py-[6px] text-[#24292f] dark:text-[#c9d1d9]"
                 />
               ),
             }}
