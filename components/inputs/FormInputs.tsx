@@ -1150,7 +1150,7 @@ const FunFactsInput: React.FC<StepComponentProps> = ({
     />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        Shift + Enter for new line, Enter to continue
+        Shift + Enter ↵ for new line, Enter to continue
       </span>
     </kbd>
   </div>
@@ -1161,56 +1161,88 @@ const EmojiToggleInput: React.FC<StepComponentProps> = ({
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <div className="w-full py-4 px-4 rounded-xl border-2 border-transparent transition-all duration-200">
-      <div className="flex items-center justify-between">
-        <label htmlFor="emoji-toggle" className="text-sm font-medium">
-          Use emojis in your profile?
-        </label>
-        <Switch
-          ref={inputRef}
-          id="emoji-toggle"
-          checked={value}
-          onCheckedChange={onChange}
-        />
+}) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === " ") {
+      // Space key
+      e.preventDefault();
+      onChange(!value);
+    } else if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  return (
+    <div
+      className="relative w-full py-12"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+    >
+      <div className="w-full py-4 px-4 rounded-xl border-2 border-transparent transition-all duration-200">
+        <div className="flex items-center gap-8">
+          <label htmlFor="emoji-toggle" className="text-sm font-medium">
+            Use emojis in your profile?
+          </label>
+          <Switch
+            ref={inputRef}
+            id="emoji-toggle"
+            checked={value}
+            onCheckedChange={onChange}
+          />
+        </div>
       </div>
+      <kbd className="absolute left-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          Enter ↵ to continue
+        </span>
+      </kbd>
     </div>
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        press Space to toggle
-      </span>
-    </kbd>
-  </div>
-);
+  );
+};
 
 const AnimatedSvgToggleInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <div className="w-full py-4 px-4 rounded-xlborder-2 border-transparent transition-all duration-200">
-      <div className="flex items-center justify-between">
-        <label htmlFor="svg-toggle" className="text-sm font-medium">
-          Include animated SVG elements?
-        </label>
-        <Switch
-          ref={inputRef}
-          id="svg-toggle"
-          checked={value}
-          onCheckedChange={onChange}
-        />
+}) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === " ") {
+      // Space key
+      e.preventDefault();
+      onChange(!value);
+    } else if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  return (
+    <div
+      className="relative w-full py-12"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+    >
+      <div className="w-full py-4 px-4 rounded-xl border-2 border-transparent transition-all duration-200">
+        <div className="flex items-center gap-8">
+          <label htmlFor="svg-toggle" className="text-sm font-medium">
+            Include animated SVG elements?
+          </label>
+          <Switch
+            ref={inputRef}
+            id="svg-toggle"
+            checked={value}
+            onCheckedChange={onChange}
+          />
+        </div>
       </div>
+      <kbd className="absolute left-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          Enter ↵ to continue
+        </span>
+      </kbd>
     </div>
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        press Space to toggle
-      </span>
-    </kbd>
-  </div>
-);
+  );
+};
 
 export {
   ProfessionalTitleInput,
