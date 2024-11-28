@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StepComponentProps } from "./AnimatedForm";
 import { useRouter } from "next/navigation";
-import { Edit } from "lucide-react";
+import { Edit, ChevronRight } from "lucide-react";
 import { useForm } from "@/context/FormContext";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { RainbowButton } from "./ui/rainbow-button";
 
 interface SectionItem {
   label: string;
@@ -88,6 +90,9 @@ const ProfileReview = ({
   const { state: formData } = useForm();
   const supabase = createClient();
   const router = useRouter();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -99,6 +104,51 @@ const ProfileReview = ({
     };
     getUser();
   }, []);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const checkScrollable = () => {
+      const isContentScrollable = container.scrollWidth > container.clientWidth;
+      setIsScrollable(isContentScrollable);
+      setIsScrolledToEnd(
+        Math.ceil(container.scrollLeft + container.clientWidth) >=
+          container.scrollWidth
+      );
+    };
+
+    checkScrollable();
+    window.addEventListener("resize", checkScrollable);
+    return () => window.removeEventListener("resize", checkScrollable);
+  }, []);
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Always prevent default to stop vertical scrolling
+    e.preventDefault();
+
+    // Calculate scroll amount based on deltaY
+    const scrollAmount = e.deltaY;
+
+    // Smooth scroll horizontally
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    setIsScrolledToEnd(
+      Math.ceil(container.scrollLeft + container.clientWidth) >=
+        container.scrollWidth
+    );
+  };
 
   const renderValue = (value: any) => {
     if (!value) return "Not set";
@@ -115,18 +165,34 @@ const ProfileReview = ({
     }
     if (typeof value === "object" && value !== null) {
       // Special handling for GitHub stats - show enabled stats
-      if (Object.keys(value).some(key => ["github", "language", "streak", "contribution", "trophy"].includes(key))) {
+      if (
+        Object.keys(value).some((key) =>
+          ["github", "language", "streak", "contribution", "trophy"].includes(
+            key
+          )
+        )
+      ) {
         return (
           <div className="flex flex-wrap gap-2">
             {Object.entries(value)
               .filter(([_, enabled]) => enabled)
               .map(([statId]) => (
-                <Badge key={statId} variant="secondary" className="text-lg px-3 py-1">
-                  {statId === "github" ? "GitHub Stats" :
-                   statId === "language" ? "Top Languages" :
-                   statId === "streak" ? "Streak Stats" :
-                   statId === "contribution" ? "Contribution Graph" :
-                   statId === "trophy" ? "GitHub Trophies" : statId}
+                <Badge
+                  key={statId}
+                  variant="secondary"
+                  className="text-lg px-3 py-1"
+                >
+                  {statId === "github"
+                    ? "GitHub Stats"
+                    : statId === "language"
+                    ? "Top Languages"
+                    : statId === "streak"
+                    ? "Streak Stats"
+                    : statId === "contribution"
+                    ? "Contribution Graph"
+                    : statId === "trophy"
+                    ? "GitHub Trophies"
+                    : statId}
                 </Badge>
               ))}
           </div>
@@ -153,16 +219,27 @@ const ProfileReview = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col pt-20">
-      <div className="flex-1 flex items-center">
-        <div className="w-full h-full">
-          <div className="relative w-full h-full">
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      <div className="flex-1 flex items-center overflow-hidden">
+        <div className="w-full h-full overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden">
             {/* Fade effect elements */}
             <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-background to-transparent z-10" />
             <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-background to-transparent z-10" />
 
             {/* Main scrolling content */}
-            <div className="flex overflow-x-auto gap-0 snap-x snap-mandatory scrollbar-hide px-[calc(25%-87.5px)] md:px-[calc(25%-125px)]">
+            <div
+              ref={scrollContainerRef}
+              onWheel={handleWheel}
+              onScroll={handleScroll}
+              className="flex gap-0 snap-x snap-mandatory px-[calc(25%-87.5px)] md:px-[calc(25%-125px)] overflow-x-auto custom-scrollbar h-full"
+              style={{
+                overscrollBehaviorX: "contain",
+                overscrollBehaviorY: "none",
+                WebkitOverflowScrolling: "touch",
+                overflowY: "hidden",
+              }}
+            >
               {REVIEW_SECTIONS.map((section) => (
                 <div
                   key={section.title}
@@ -205,16 +282,41 @@ const ProfileReview = ({
                 </div>
               ))}
             </div>
+
+            {/* Scroll Indicator */}
+            <AnimatePresence>
+              {isScrollable && !isScrolledToEnd && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20"
+                >
+                  <motion.div
+                    animate={{
+                      x: [0, 10, 0],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="bg-background/80 backdrop-blur-sm border border-border rounded-full p-2 shadow-lg"
+                  >
+                    <ChevronRight className="w-6 h-6 text-foreground/60" />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
-      <Button
+      <RainbowButton
         onClick={() => router.push("/preview")}
         className="fixed bottom-8 right-8 z-50 rainbow-button"
-        size="lg"
       >
         Generate Profile
-      </Button>
+      </RainbowButton>
     </div>
   );
 };

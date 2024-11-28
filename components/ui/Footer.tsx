@@ -31,7 +31,11 @@ const Footer: React.FC = () => {
   return (
     <footer
       className="hidden md:block bg-white text-black dark:bg-black dark:text-white w-full border-t-2 border-t-foreground/10 p-8 flex items-center"
-      style={{ pointerEvents: "none" as const }}
+      style={{
+        pointerEvents: "none" as const,
+        position: "relative",
+        zIndex: 10,
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 py-5">
         <div className="flex justify-between items-start">

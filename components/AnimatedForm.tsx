@@ -114,6 +114,7 @@ const FormStep: React.FC<{
   currentStep,
 }) => {
   const StepComponent = config.component;
+  const isReviewStep = currentStep === 20; // Adjust this number based on your review step
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -131,7 +132,12 @@ const FormStep: React.FC<{
       exit="exit"
       variants={animations.stepperVariants}
       custom={direction}
-      className="space-y-6 relative w-full px-4 md:px-8"
+      className={`relative w-full px-4 md:px-8 ${
+        isReviewStep ? "overflow-hidden" : "space-y-6"
+      }`}
+      style={{
+        height: isReviewStep ? "100%" : "auto",
+      }}
     >
       {currentStep !== 20 && (
         <div className="flex items-center space-x-4 justify-start w-full">
@@ -156,7 +162,7 @@ const FormStep: React.FC<{
         </div>
       )}
 
-      <div className="w-full">
+      <div className={`w-full ${isReviewStep ? "h-full" : ""}`}>
         <StepComponent
           value={value}
           onChange={onChange}
@@ -256,7 +262,16 @@ export const AnimatedForm: React.FC<{
     if (step === steps.length) {
       console.log("Toggled ");
       setReviewToggle(true);
+      // Lock body scroll
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Restore body scroll
+      document.body.style.overflow = 'auto';
     }
+    return () => {
+      // Cleanup: restore body scroll when component unmounts
+      document.body.style.overflow = 'auto';
+    };
   }, [step]);
 
   // Update form data when initialFormData changes
@@ -434,13 +449,24 @@ export const AnimatedForm: React.FC<{
 
       {/* Form Section */}
       <motion.div
-        className="flex-1 h-full w-full md:w-3/4 flex items-center justify-center p-8 md:p-16"
+        className={`flex-1 h-full w-full md:w-3/4 flex items-center justify-center p-8 md:p-16`}
         variants={animations.formVariants}
+        style={{
+          maxHeight: "100vh",
+          position: "relative",
+          overflow: step === 20 ? "hidden" : "auto"
+        }}
       >
         <motion.form
-          className="w-full max-w-full space-y-8 px-4 md:px-8"
+          className={`w-full max-w-full ${
+            step === 20 ? "h-full" : "space-y-8"
+          } px-4 md:px-8`}
           onSubmit={(e) => e.preventDefault()}
           onKeyDown={handleFormKeyDown}
+          style={{
+            overflow: step === 20 ? "hidden" : "visible",
+            height: step === 20 ? "100%" : "auto",
+          }}
         >
           <AnimatePresence mode="wait" custom={direction}>
             <FormStep
@@ -456,7 +482,6 @@ export const AnimatedForm: React.FC<{
               currentStep={step}
             />
           </AnimatePresence>
-
           <motion.div
             className="flex justify-end gap-6 mt-12"
             variants={animations.itemVariants}

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import ComboTagSelector from "@/components/ui/ComboTagSelector";
 import { ColorPicker } from "@/components/ui/color-picker";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
@@ -74,7 +73,7 @@ const ProfessionalTitleInput: React.FC<StepComponentProps> = ({
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder="e.g., Senior Frontend Developer"
-      className=" w-full py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-4xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+      className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
     />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
@@ -136,7 +135,7 @@ const OrganizationInput: React.FC<StepComponentProps> = ({
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder="Current organization"
-      className="w-full py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-4xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+      className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
     />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
@@ -191,7 +190,7 @@ const LinkedInInput: React.FC<StepComponentProps> = ({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="LinkedIn profile URL (optional)"
-        className="w-full py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-4xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+        className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
       />
       <div className="absolute right-10 bottom-2 flex  items-end gap-1">
         <kbd className="hidden sm:inline-flex">
@@ -218,7 +217,7 @@ const ProfessionalSummaryInput: React.FC<StepComponentProps> = ({
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder="Write a brief professional summary..."
-      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
     />
     <div className="absolute right-10 bottom-2 flex items-end gap-1">
       <kbd className="hidden sm:inline-flex">
@@ -282,7 +281,7 @@ const TimeZoneInput: React.FC<StepComponentProps> = ({
   return (
     <div className="relative w-full px-12 py-12" onKeyDown={onKeyDown}>
       <Select value={currentValue} onValueChange={handleValueChange}>
-        <SelectTrigger className="w-full py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200">
+        <SelectTrigger className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200">
           <SelectValue placeholder="Select your timezone" />
         </SelectTrigger>
         <SelectContent>
@@ -345,18 +344,17 @@ const PronounsInput: React.FC<StepComponentProps> = ({
   return (
     <div className="w-full space-y-6">
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-center">Pronouns</h3>
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="text-2xl text-muted-foreground">
           How would you like to be referred to?
         </p>
       </div>
 
-      <div className="flex flex-col items-center space-y-4">
+      <div className="flex flex-col items-start space-y-4">
         <ToggleGroup
           type="single"
           value={value?.type || ""}
           onValueChange={handlePronounChange}
-          className="justify-center flex-wrap gap-4"
+          className="justify-start flex-wrap gap-4 text-2xl"
         >
           <ToggleGroupItem
             value="he/him"
@@ -548,7 +546,7 @@ const RecentAchievementsInput: React.FC<StepComponentProps> = ({
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder="Share your recent achievements..."
-      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-4xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
     />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
@@ -563,76 +561,162 @@ const CollaborationInput: React.FC<StepComponentProps> = ({
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <ToggleGroup
-      ref={inputRef}
-      value={value}
-      onValueChange={onChange}
-      type="single"
-      className="w-full justify-start space-x-4 py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200"
-    >
-      <ToggleGroupItem value="yes">Yes</ToggleGroupItem>
-      <ToggleGroupItem value="no">No</ToggleGroupItem>
-    </ToggleGroup>
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        press Tab to toggle ⇥
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const options = ["yes", "no"];
+      const currentIndex = options.indexOf(value);
+      const nextIndex = (currentIndex + 1) % options.length;
+      onChange(options[nextIndex]);
+    } else if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  return (
+    <div className="relative w-full px-12 py-12">
+      <ToggleGroup
+        ref={inputRef}
+        value={value}
+        onValueChange={onChange}
+        type="single"
+        className="w-full justify-start space-x-4 py-4 px-4 rounded-xl border-2 border-transparent  transition-all duration-200 text-2xl"
+        onKeyDown={handleKeyDown}
+      >
+        <ToggleGroupItem
+          value="yes"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          Yes
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="no"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          No
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          press Tab to cycle through options ⇥
+        </span>
+      </kbd>
+    </div>
+  );
+};
 
 const MentorshipInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <ToggleGroup
-      ref={inputRef}
-      value={value}
-      onValueChange={onChange}
-      type="single"
-      className="w-full justify-start space-x-4 py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200"
-    >
-      <ToggleGroupItem value="mentor">Willing to Mentor</ToggleGroupItem>
-      <ToggleGroupItem value="mentee">Looking for Mentor</ToggleGroupItem>
-      <ToggleGroupItem value="both">Both</ToggleGroupItem>
-    </ToggleGroup>
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        press Tab to toggle ⇥
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const options = ["mentor", "mentee", "both", "none"];
+      const currentIndex = options.indexOf(value);
+      const nextIndex = (currentIndex + 1) % options.length;
+      onChange(options[nextIndex]);
+    } else if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  return (
+    <div className="relative w-full px-12 py-12">
+      <ToggleGroup
+        ref={inputRef}
+        value={value}
+        onValueChange={onChange}
+        type="single"
+        className="w-full justify-start space-x-4 py-4 px-4 rounded-xlborder-2 border-transparent transition-all duration-200 text-2xl"
+        onKeyDown={handleKeyDown}
+      >
+        <ToggleGroupItem
+          value="mentor"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          Willing to Mentor
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="mentee"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          Looking for Mentor
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="both"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          Both
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="none"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          Not Interested
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          press Tab to cycle through options ⇥
+        </span>
+      </kbd>
+    </div>
+  );
+};
 
 const OpenSourceInput: React.FC<StepComponentProps> = ({
   value,
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <ToggleGroup
-      ref={inputRef}
-      value={value}
-      onValueChange={onChange}
-      type="single"
-      className="w-full justify-start space-x-4 py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200"
-    >
-      <ToggleGroupItem value="yes">Yes</ToggleGroupItem>
-      <ToggleGroupItem value="no">No</ToggleGroupItem>
-    </ToggleGroup>
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        press Tab to toggle ⇥
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const options = ["yes", "no"];
+      const currentIndex = options.indexOf(value);
+      const nextIndex = (currentIndex + 1) % options.length;
+      onChange(options[nextIndex]);
+    } else if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
+
+  return (
+    <div className="relative w-full px-12 py-12">
+      <ToggleGroup
+        ref={inputRef}
+        value={value}
+        onValueChange={onChange}
+        type="single"
+        className="w-full justify-start space-x-4 py-4 px-4 rounded-xlborder-2 border-transparent  transition-all duration-200 text-2xl"
+        onKeyDown={handleKeyDown}
+      >
+        <ToggleGroupItem
+          value="yes"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          Yes
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="no"
+          className="text-2xl px-6 py-3 data-[state=on]:bg-black data-[state=on]:text-white dark:data-[state=on]:bg-white dark:data-[state=on]:text-black transition-colors"
+        >
+          No
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          press Tab to cycle through options ⇥
+        </span>
+      </kbd>
+    </div>
+  );
+};
 
 interface ContactPreferences {
   email: boolean;
@@ -966,7 +1050,7 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
               <DialogTrigger asChild>
                 <div
                   className={cn(
-                    "group relative rounded-lg border-2 transition-all duration-200 hover:shadow-md cursor-pointer",
+                    "group relative rounded-lg border-2 transition-all duration-200 cursor-pointer",
                     "bg-background dark:bg-background/5",
                     isEnabled
                       ? "border-primary shadow-md bg-primary/5 dark:bg-primary/10"
@@ -1051,7 +1135,7 @@ const FunFactsInput: React.FC<StepComponentProps> = ({
       onChange={(e) => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder="Share some fun facts about yourself (optional)"
-      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-4xl focus:border-2 focus:border-black dark:focus:border-white shadow-sm hover:shadow-md transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+      className="w-full min-h-[200px] py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
     />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
@@ -1068,7 +1152,7 @@ const EmojiToggleInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <div className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200">
+    <div className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent transition-all duration-200">
       <div className="flex items-center justify-between">
         <label htmlFor="emoji-toggle" className="text-sm font-medium">
           Use emojis in your profile?
@@ -1096,7 +1180,7 @@ const AnimatedSvgToggleInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <div className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent hover:shadow-md transition-all duration-200">
+    <div className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent transition-all duration-200">
       <div className="flex items-center justify-between">
         <label htmlFor="svg-toggle" className="text-sm font-medium">
           Include animated SVG elements?

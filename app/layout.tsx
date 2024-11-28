@@ -80,9 +80,11 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <main className="flex min-h-screen flex-col">
-                <Navbar user={user} /> {/* Pass user instead of session */}
-                {children}
+              <main className="flex min-h-screen flex-col relative">
+                <Navbar user={user} /> 
+                <div className="flex-1 relative">
+                  {children}
+                </div>
                 <Footer />
                 <Toaster richColors position="top-center" />
               </main>
@@ -103,9 +105,11 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <main className="flex min-h-screen flex-col">
+              <main className="flex min-h-screen flex-col relative">
                 <Navbar user={null} />
-                {children}
+                <div className="flex-1 relative">
+                  {children}
+                </div>
                 <Footer />
                 <Toaster richColors position="top-center" />
               </main>

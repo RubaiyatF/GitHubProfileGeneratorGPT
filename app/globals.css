@@ -306,3 +306,32 @@ body {
 .markdown-body table tr {
   background-color: var(--markdown-code-bg) !important;
 }
+
+/* Custom Scrollbar Styles */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.3);
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--foreground) / 0.2) hsl(var(--background));
+}
