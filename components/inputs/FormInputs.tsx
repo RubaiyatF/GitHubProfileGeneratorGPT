@@ -13,13 +13,6 @@ import { AnimatedNumberInput } from "../ui/animated-number";
 import { AnimatedSlider } from "../ui/animated-slider";
 import spacetime from "spacetime";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   MultiSelector,
   MultiSelectorTrigger,
   MultiSelectorInput,
@@ -27,6 +20,7 @@ import {
   MultiSelectorList,
   MultiSelectorItem,
 } from "@/components/ui/multi-select";
+import MultipleSelector, { Option } from "@/components/ui/Multipleselect";
 import {
   Carousel,
   CarouselContent,
@@ -49,6 +43,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface StepComponentProps {
   value: any;
@@ -438,33 +439,59 @@ const LanguagesInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <MultiSelector
-      values={value || []}
-      onValuesChange={onChange}
-      loop={false}
-      ref={inputRef}
-      autoFocus={true}
-    >
-      <MultiSelectorTrigger>
-        <MultiSelectorInput placeholder="Select languages you speak" />
-      </MultiSelectorTrigger>
-      <MultiSelectorContent>
-        <MultiSelectorList>
-          {LANGUAGES.map((lang, i) => (
-            <MultiSelectorItem key={i} value={lang.value}>
-              {lang.label}
-            </MultiSelectorItem>
-          ))}
-        </MultiSelectorList>
-      </MultiSelectorContent>
-    </MultiSelector>
+    <MultipleSelector
+      value={value || []}
+      defaultOptions={LANGUAGES}
+      placeholder="Select languages you speak..."
+      creatable
+      emptyIndicator={
+        <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+          No languages found. Type to create a new one.
+        </p>
+      }
+      onChange={onChange}
+    />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        Enter to select ↵
+        Enter to add the language ↵
       </span>
     </kbd>
   </div>
 );
+
+const EXPERTISE = [
+  { value: "javascript", label: "JavaScript" },
+  { value: "typescript", label: "TypeScript" },
+  { value: "react", label: "React" },
+  { value: "angular", label: "Angular" },
+  { value: "vuejs", label: "Vue.js" },
+  { value: "nodejs", label: "Node.js" },
+  { value: "expressjs", label: "Express.js" },
+  { value: "nestjs", label: "Nest.js" },
+  { value: "ruby", label: "Ruby" },
+  { value: "python", label: "Python" },
+  { value: "django", label: "Django" },
+  { value: "flask", label: "Flask" },
+  { value: "java", label: "Java" },
+  { value: "spring", label: "Spring" },
+  { value: "kotlin", label: "Kotlin" },
+  { value: "csharp", label: "C#" },
+  { value: "aspnet", label: "ASP.NET" },
+  { value: "go", label: "Go" },
+  { value: "rust", label: "Rust" },
+  { value: "swift", label: "Swift" },
+  { value: "php", label: "PHP" },
+  { value: "laravel", label: "Laravel" },
+  { value: "codeigniter", label: "CodeIgniter" },
+  { value: "cplusplus", label: "C++" },
+  { value: "matlab", label: "MATLAB" },
+  { value: "r", label: "R" },
+  { value: "sql", label: "SQL" },
+  { value: "postgresql", label: "PostgreSQL" },
+  { value: "mongodb", label: "MongoDB" },
+  { value: "mysql", label: "MySQL" },
+  { value: "redis", label: "Redis" },
+];
 
 const ExpertiseInput: React.FC<StepComponentProps> = ({
   value,
@@ -473,61 +500,21 @@ const ExpertiseInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <MultiSelector
-      values={value || []}
-      onValuesChange={onChange}
-      loop={false}
-      ref={inputRef}
-      autoFocus={true}
-    >
-      <MultiSelectorTrigger>
-        <MultiSelectorInput placeholder="Select your areas of expertise" />
-      </MultiSelectorTrigger>
-      <MultiSelectorContent>
-        <MultiSelectorList>
-          {[
-            "JavaScript",
-            "TypeScript",
-            "React",
-            "Angular",
-            "Vue.js",
-            "Node.js",
-            "Express.js",
-            "Nest.js",
-            "Ruby",
-            "Python",
-            "Django",
-            "Flask",
-            "Java",
-            "Spring",
-            "Kotlin",
-            "C#",
-            "ASP.NET",
-            "Go",
-            "Rust",
-            "Swift",
-            "PHP",
-            "Laravel",
-            "CodeIgniter",
-            "C++",
-            "MATLAB",
-            "R",
-            "SQL",
-            "PostgreSQL",
-            "MongoDB",
-            "MySQL",
-            "Redis",
-          ].map((expertise, i) => (
-            <MultiSelectorItem key={i} value={expertise}>
-              {expertise}
-            </MultiSelectorItem>
-          ))}
-        </MultiSelectorList>
-      </MultiSelectorContent>
-    </MultiSelector>
+    <MultipleSelector
+      value={value || []}
+      defaultOptions={EXPERTISE}
+      placeholder="Select your areas of expertise..."
+      creatable
+      emptyIndicator={
+        <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+          Type to create a new one.
+        </p>
+      }
+      onChange={onChange}
+    />
     <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
       <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        Enter to select ↵
+        Enter to add↵
       </span>
     </kbd>
   </div>
@@ -941,7 +928,7 @@ const GITHUB_STATS: StatType[] = [
         id: "streak-default",
         title: "Default Style",
         imageUrl:
-          "https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=000000&fire=00d73d&currStreakNum=000000&sideNums=000000&currStreakLabel=000000&sideLabels=000000&dates=000000&stroke=000000",
+          "https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=000000&fire=00d73d&currStreakNum=000000&sideNums=000000&currStreakLabel=000000&sideLabels=000000&dates=000000&stroke=000000&background=ffffff00",
       },
     ],
   },
@@ -1152,7 +1139,7 @@ const EmojiToggleInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <div className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent transition-all duration-200">
+    <div className="w-full py-4 px-4 rounded-xl border-2 border-transparent transition-all duration-200">
       <div className="flex items-center justify-between">
         <label htmlFor="emoji-toggle" className="text-sm font-medium">
           Use emojis in your profile?
@@ -1180,7 +1167,7 @@ const AnimatedSvgToggleInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => (
   <div className="relative w-full px-12 py-12">
-    <div className="w-full py-4 px-4 rounded-xl bg-gray-50 dark:bg-gray-900 border-2 border-transparent transition-all duration-200">
+    <div className="w-full py-4 px-4 rounded-xlborder-2 border-transparent transition-all duration-200">
       <div className="flex items-center justify-between">
         <label htmlFor="svg-toggle" className="text-sm font-medium">
           Include animated SVG elements?
