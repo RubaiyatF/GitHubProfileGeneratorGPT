@@ -1,48 +1,181 @@
-// app/api/generate/route.ts
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const { formData, user } = await req.json();
 
-  const prompt = `Create a GitHub profile README.md for a developer. Return ONLY the markdown content, no explanations or additional text.
+  const prompt = `Create a GitHub profile README.md for a developer. Return ONLY the markdown content, no explanations or additional text. The README should support both dark and light modes using GitHub's prefers-color-scheme media queries.
 
 User Information:
 - Name: ${user.user_metadata?.full_name || user.email}
-- GitHub Profile: ${user.user_metadata?.user_name || ""}
-- Avatar URL: ${user.user_metadata?.avatar_url || ""}
+- GitHub Username: ${user.user_metadata?.user_name}
+- Avatar URL: ${user.user_metadata?.avatar_url}
 - Email: ${user.email}
 
-Professional Information:
-- Title: ${formData.professionalTitle}
-- Work Focus: ${formData.workFocus}
-- Primary Programming Languages/Tools: ${formData.expertise.join(", ")}
-- Learning Goals: ${formData.learningGoals}
-- Collaboration Interests: ${formData.collaborationInterests}
-- Areas of Expertise: ${formData.expertiseTopics.join(", ")}
-- Help Topics: ${formData.helpTopics.join(", ")}
+Create an engaging introduction that incorporates these key details:
+- Years of Experience: ${formData.yearsExperience} years
+- Current Organization: ${formData.organization}
+- Professional Title: ${formData.professionalTitle}
+- Summary: ${formData.summary}
 
-Personal Information:
-- Fun Facts: ${formData.funFacts}
-- Pronouns: ${formData.pronouns}
-- Languages Spoken: ${formData.languages.join(", ")}
-- Availability: ${formData.availability}
+Professional Engagement (create a dedicated section):
+- Open to Collaboration: ${
+    formData.collaboration === "yes"
+      ? "Open to collaborating on interesting projects"
+      : "Not currently seeking collaborations"
+  }
+- Mentorship Status: ${
+    formData.mentorship === "mentor"
+      ? "Available for mentoring"
+      : formData.mentorship === "mentee"
+      ? "Looking for mentorship"
+      : ""
+  }
+- Open Source: ${
+    formData.openSource === "yes" ? "Active in open source communities" : ""
+  }
+- Notable Achievements: ${formData.achievements}
+- Timezone: ${formData.timeZone} (for coordination)
 
-Styling Preferences:
-- Primary Color: ${formData.theme.primaryColor}
-- Selected GitHub Stats to Show: ${formData.stats.selectedStats.join(", ")}
+Required Component URLs:
 
-Include:
-- HTML/CSS header with name and avatar
-- Professional and personal sections with emojis
-- GitHub stats widgets (using provided GitHub username)
-- Technology badges
-- Section headers and dividers
-- Contact information
-- Visitor counter
+1. Header Wave:
+\`\`\`
+https://capsule-render.vercel.app/api?type=waving&color=${formData.accentColor.substring(
+    1
+  )}&height=120&section=header&text=Hey%20There!%20👋&fontSize=60&fontColor={COLOR}&animation=fadeIn&background=transparent
+\`\`\`
 
-Return only valid markdown content for README.md.`;
+2. Profile Views Counter:
+\`\`\`
+https://komarev.com/ghpvc/?username=${
+    user.user_metadata?.user_name
+  }&color=${formData.accentColor.substring(1)}&style=flat&label=PROFILE+VIEWS
+\`\`\`
 
-  // Log the prompt being sent to OpenAI
+3. Typing SVG (Include title and key info):
+\`\`\`
+https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=1000&color={COLOR}&center=true&vCenter=true&random=false&width=100%25&lines=${encodeURIComponent(
+    formData.professionalTitle
+  )};${encodeURIComponent(
+    `${formData.yearsExperience} Years of Experience`
+  )};${encodeURIComponent(`Currently at ${formData.organization}`)};${
+    formData.openSource === "yes" ? "Open Source Enthusiast" : ""
+  };Always Learning New Things
+\`\`\`
+
+4. GitHub Stats:
+\`\`\`
+https://github-readme-stats.vercel.app/api?username=${
+    user.user_metadata?.user_name
+  }&show_icons=true&count_private=true&hide_border=true&title_color={COLOR}&icon_color=${formData.accentColor.substring(
+    1
+  )}&text_color={COLOR}&bg_color=00000000
+\`\`\`
+
+5. GitHub Streak:
+\`\`\`
+https://github-readme-streak-stats.herokuapp.com/?user=${
+    user.user_metadata?.user_name
+  }&hide_border=true&stroke={COLOR}&background=transparent&ring=${formData.accentColor.substring(
+    1
+  )}&fire=${formData.accentColor.substring(1)}&currStreakLabel={COLOR}
+\`\`\`
+
+6. Contribution Graph:
+\`\`\`
+https://github-readme-activity-graph.vercel.app/graph?username=${
+    user.user_metadata?.user_name
+  }&bg_color=transparent&color={COLOR}&line=${formData.accentColor.substring(
+    1
+  )}&point={COLOR}&area=true&hide_border=true
+\`\`\`
+
+7. Language Stats:
+\`\`\`
+https://github-readme-stats.vercel.app/api/top-langs/?username=${
+    user.user_metadata?.user_name
+  }&layout=compact&hide_border=true&title_color={COLOR}&text_color={COLOR}&bg_color=00000000
+\`\`\`
+
+8. GitHub Trophies:
+\`\`\`
+Dark: https://github-profile-trophy.vercel.app/?username=${
+    user.user_metadata?.user_name
+  }&theme=onestar&no-frame=true&no-bg=true&margin-w=4&column=-1
+Light: https://github-profile-trophy.vercel.app/?username=${
+    user.user_metadata?.user_name
+  }&theme=flat&no-frame=true&no-bg=true&margin-w=4&column=-1
+\`\`\`
+
+Note: Replace {COLOR} with:
+- Dark mode: ffffff
+- Light mode: 000000
+
+Component Layout:
+1. Header with wave effect
+2. Profile views counter (centered)
+3. Enhanced animated typing SVG with professional details (only if ${
+    formData.animatedSvg
+  })
+4. Professional Introduction Section:
+   - Summary (enhanced version of user's input)
+   - Years of experience and current role
+   - Key achievements
+   - Professional engagements (collaboration, mentorship, open source)
+5. Stats section (if enabled):
+   - GitHub Stats and Streak side by side (49% width each)
+   - Contribution Graph (full width)
+   - Language Stats (60% width, centered)
+   - Trophies (full width, auto-column)
+6. Tech stack section with badges for: ${formData.expertise
+    .map((tech) => tech.label)
+    .join(", ")}
+7. Professional Engagement Section:
+   - Collaboration preferences
+   - Mentorship status
+   - Open source involvement
+   - Timezone availability
+8. Contact information (show only selected methods):
+   ${formData.contactPreferences.email ? "   - Email\n" : ""}
+   ${
+     formData.contactPreferences.linkedin
+       ? "   - LinkedIn profile: ${formData.linkedIn}\n"
+       : ""
+   }
+   ${formData.contactPreferences.calendly ? "   - Calendly\n" : ""}
+9. Footer wave
+
+Instructions for content enhancement:
+1. Take the user's summary and elaborate it into a professional, engaging introduction
+2. Format achievements as bullet points if multiple items are detected
+3. Organize collaboration, mentorship, and open source information in a clear, inviting way
+4. Include timezone information in a practical context (e.g., "Available for collaboration in ${
+    formData.timeZone
+  }")
+5. Ensure all HTML elements are properly centered using align attributes
+
+Stats Configuration (include only if true):
+- GitHub Statistics: ${formData.statsConfig.github}
+- GitHub Streak Stats: ${formData.statsConfig.github}
+- Contribution Graph: ${formData.statsConfig.github}
+- Language Statistics: ${formData.statsConfig.language}
+- GitHub Trophies: ${formData.statsConfig.trophy}
+
+${
+  formData.useEmojis
+    ? "Use appropriate emojis for section headers and key points"
+    : "Do not use emojis in the content"
+}
+
+Each component must:
+- Use <picture> tags with dark/light mode variants
+- Maintain transparent backgrounds
+- Use proper color scheme based on mode
+- Be properly centered and aligned
+
+Return only valid markdown content that can be directly used in a GitHub profile README.md file.`;
+
+  // Log the prompt for debugging
   console.log("Prompt being sent to OpenAI:", prompt);
 
   try {
@@ -58,7 +191,7 @@ Return only valid markdown content for README.md.`;
           {
             role: "system",
             content:
-              "You are an expert at creating modern, visually appealing GitHub profile READMEs using markdown. You know how to use HTML within markdown, badges, GitHub stats widgets, and other visual elements to create engaging profiles.",
+              "You are an expert at creating modern, visually appealing GitHub profile READMEs using markdown. You excel at transforming user-provided information into professional, engaging content while maintaining a clean, organized layout. You know how to enhance user-provided summaries and achievements into compelling narrative elements. You understand the importance of responsive design and proper component spacing.",
           },
           {
             role: "user",
