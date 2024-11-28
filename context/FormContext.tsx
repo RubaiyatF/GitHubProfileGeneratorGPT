@@ -83,7 +83,11 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
 
 // Provider component
 export const FormProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(formReducer, {});
+  const [state, dispatch] = useReducer(formReducer, {
+    yearsExperience: 2,
+    useEmojis: true,
+    animatedSvg: true,
+  });
 
   // Load saved form data from localStorage on mount
   useEffect(() => {

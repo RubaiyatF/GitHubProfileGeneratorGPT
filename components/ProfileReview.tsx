@@ -75,6 +75,9 @@ const REVIEW_SECTIONS: Section[] = [
     items: [
       { label: "Accent Color", value: "accentColor", step: 15 },
       { label: "GitHub Stats", value: "statsConfig", step: 16 },
+      { label: "Fun Facts", value: "funFacts", step: 17 },
+      { label: "Use Emojis", value: "useEmojis", step: 18 },
+      { label: "Use Animated SVG", value: "animatedSvg", step: 19 },
     ],
   },
 ];
@@ -150,17 +153,36 @@ const ProfileReview = ({
     );
   };
 
+  const handleScrollClick = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Scroll by the width of one card (500px) plus some margin
+    const scrollAmount = 520; // 500px card width + 20px margin
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
   const renderValue = (value: any) => {
     if (!value) return "Not set";
     if (Array.isArray(value)) {
       return (
         <div className="flex flex-wrap gap-2">
-          {value.map((v: string, i: number) => (
+          {value.map((v: any, i: number) => (
             <Badge key={i} variant="secondary" className="text-lg px-3 py-1">
-              {v}
+              {v.label || v}
             </Badge>
           ))}
         </div>
+      );
+    }
+    if (typeof value === "boolean") {
+      return (
+        <span className="text-lg">
+          {value ? "Yes" : "No"}
+        </span>
       );
     }
     if (typeof value === "object" && value !== null) {
@@ -197,10 +219,6 @@ const ProfileReview = ({
               ))}
           </div>
         );
-      }
-      // Special handling for pronouns
-      if (value.type === "pronouns") {
-        return <span className="text-lg">{value.value}</span>;
       }
       return (
         <div className="space-y-2">
@@ -244,7 +262,7 @@ const ProfileReview = ({
                 <div
                   key={section.title}
                   className={cn(
-                    "rounded-lg border bg-background flex-none w-[350px] md:w-[500px] snap-center",
+                    " border-t-2 bg-background flex-none w-[350px] md:w-[500px] snap-center",
                     "border-border shadow-sm mx-2"
                   )}
                 >
@@ -301,8 +319,12 @@ const ProfileReview = ({
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className="bg-background/80 backdrop-blur-sm border border-border rounded-full p-2 shadow-lg"
+                    onClick={handleScrollClick}
+                    className="bg-background/80 backdrop-blur-sm border border-border rounded-full p-4 shadow-lg flex items-center gap-2 cursor-pointer hover:bg-accent transition-colors"
                   >
+                    <span className="text-sm font-medium text-foreground/80">
+                      Scroll to view more
+                    </span>
                     <ChevronRight className="w-6 h-6 text-foreground/60" />
                   </motion.div>
                 </motion.div>
@@ -313,7 +335,7 @@ const ProfileReview = ({
       </div>
       <RainbowButton
         onClick={() => router.push("/preview")}
-        className="fixed bottom-8 right-8 z-50 rainbow-button"
+        className="fixed bottom-12 right-12 z-50 rainbow-button h-18 px-12 text-2xl font-bold"
       >
         Generate Profile
       </RainbowButton>

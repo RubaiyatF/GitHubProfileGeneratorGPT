@@ -11,15 +11,6 @@ import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AnimatedNumberInput } from "../ui/animated-number";
 import { AnimatedSlider } from "../ui/animated-slider";
-import spacetime from "spacetime";
-import {
-  MultiSelector,
-  MultiSelectorTrigger,
-  MultiSelectorInput,
-  MultiSelectorContent,
-  MultiSelectorList,
-  MultiSelectorItem,
-} from "@/components/ui/multi-select";
 import MultipleSelector, { Option } from "@/components/ui/Multipleselect";
 import {
   Carousel,
@@ -49,7 +40,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
+import { createClient } from "@/lib/supabase";
 
 interface StepComponentProps {
   value: any;
@@ -155,8 +147,7 @@ const LinkedInInput: React.FC<StepComponentProps> = ({
 }) => {
   const validateLinkedIn = (url: string) => {
     if (!url) return true; // Allow empty for skipping
-    const linkedInRegex =
-      /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[\w-]+\/?$/;
+    const linkedInRegex = /^(https?:\/\/)?(www\.)?linkedin\.com\/[\w-]+\/?$/;
     return linkedInRegex.test(url);
   };
 
@@ -190,7 +181,7 @@ const LinkedInInput: React.FC<StepComponentProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="linkedin.com/in/your-user-name (optional)"
+        placeholder="linkedin.com/your-user-name (optional)"
         className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600"
       />
       <div className="absolute right-10 bottom-2 flex  items-end gap-1">
@@ -236,22 +227,15 @@ const TimeZoneInput: React.FC<StepComponentProps> = ({
   onKeyDown,
   inputRef,
 }) => {
-  const [systemTimeZone, setSystemTimeZone] = React.useState("");
-
   React.useEffect(() => {
-    // Get system timezone
-    const now = spacetime.now();
-    const timezone = now.timezone().name;
-    setSystemTimeZone(timezone);
+    // Get and set system timezone on mount
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Always set the timezone on mount, regardless of existing value
+    onChange(timezone);
+  }, []); // Only run on mount
 
-    // Only set system timezone as default if no value exists
-    if (!value) {
-      onChange(timezone);
-    }
-  }, []);
-
-  const timeZones = React.useMemo(() => {
-    const zones = [
+  const timeZones = React.useMemo(
+    () => [
       "America/New_York",
       "America/Chicago",
       "America/Denver",
@@ -267,48 +251,43 @@ const TimeZoneInput: React.FC<StepComponentProps> = ({
       "Asia/Shanghai",
       "Australia/Sydney",
       "Pacific/Auckland",
-    ];
+    ],
+    []
+  );
 
-    // Remove system timezone from list if it exists to prevent duplication
-    return zones.filter((zone) => zone !== systemTimeZone);
-  }, [systemTimeZone]);
-
-  const handleValueChange = (newValue: string) => {
-    onChange(newValue);
-  };
-
-  const currentValue = value || systemTimeZone;
+  const systemTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const availableTimeZones = React.useMemo(
+    () => timeZones.filter((zone) => zone !== systemTimeZone),
+    [timeZones, systemTimeZone]
+  );
 
   return (
     <div className="relative w-full px-12 py-12" onKeyDown={onKeyDown}>
-      <Select value={currentValue} onValueChange={handleValueChange}>
-        <SelectTrigger className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200">
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger
+          ref={inputRef}
+          className="w-full py-8 px-8 rounded-xl bg-white dark:bg-gray-900 border-2 border-transparent text-2xl focus:border-2 focus:border-black dark:focus:border-white transition-all duration-200"
+        >
           <SelectValue placeholder="Select your timezone" />
         </SelectTrigger>
         <SelectContent>
-          {systemTimeZone && (
-            <SelectItem value={systemTimeZone}>
-              {systemTimeZone} (System)
+          <SelectItem value={systemTimeZone}>
+            {systemTimeZone} (System)
+          </SelectItem>
+          <SelectItem value="divider" disabled>
+            ───────────────
+          </SelectItem>
+          {availableTimeZones.map((zone) => (
+            <SelectItem key={zone} value={zone}>
+              {zone}
             </SelectItem>
-          )}
-          {timeZones.length > 0 && (
-            <>
-              <SelectItem value="divider" disabled>
-                ───────────────
-              </SelectItem>
-              {timeZones.map((zone) => (
-                <SelectItem key={zone} value={zone}>
-                  {zone}
-                </SelectItem>
-              ))}
-            </>
-          )}
+          ))}
         </SelectContent>
       </Select>
       <div className="absolute right-10 bottom-2 flex items-end gap-1">
         <kbd className="hidden sm:inline-flex">
           <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-            Press Enter ↵ to continue
+            Select your time zone and Enter ↵ to continue
           </span>
         </kbd>
       </div>
@@ -323,14 +302,14 @@ const PronounsInput: React.FC<StepComponentProps> = ({
   inputRef,
 }) => {
   const [customPronoun, setCustomPronoun] = useState(
-    value?.type === "custom" ? value.value : ""
+    typeof value === "object" ? value.value : value || ""
   );
 
-  const handlePronounChange = (type: string) => {
-    if (type === "custom") {
-      onChange({ type, value: customPronoun });
+  const handlePronounChange = (pronounValue: string) => {
+    if (pronounValue === "custom") {
+      onChange(customPronoun);
     } else {
-      onChange({ type, value: type });
+      onChange(pronounValue);
     }
   };
 
@@ -339,8 +318,10 @@ const PronounsInput: React.FC<StepComponentProps> = ({
   ) => {
     const newValue = e.target.value;
     setCustomPronoun(newValue);
-    onChange({ type: "custom", value: newValue });
+    onChange(newValue);
   };
+
+  const currentValue = typeof value === "object" ? value.value : value;
 
   return (
     <div className="w-full space-y-6">
@@ -353,7 +334,7 @@ const PronounsInput: React.FC<StepComponentProps> = ({
       <div className="flex flex-col items-start space-y-4">
         <ToggleGroup
           type="single"
-          value={value?.type || ""}
+          value={currentValue}
           onValueChange={handlePronounChange}
           className="justify-start flex-wrap gap-4 text-2xl"
         >
@@ -384,7 +365,7 @@ const PronounsInput: React.FC<StepComponentProps> = ({
         </ToggleGroup>
 
         <AnimatePresence mode="wait">
-          {value?.type === "custom" && (
+          {currentValue === "custom" && (
             <motion.div
               initial={{ opacity: 0, height: 0, y: -20 }}
               animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -906,102 +887,91 @@ interface StatsConfig {
   };
 }
 
-const GITHUB_STATS: StatType[] = [
-  {
-    id: "github-stats",
-    title: "GitHub Statistics",
-    description: "Show your GitHub activity statistics",
-    variants: [
-      {
-        id: "stats-default",
-        title: "Default Style",
-        imageUrl:
-          "https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=000000&icon_color=00d73d&text_color=000000&bg_color=00000000",
-      },
-      {
-        id: "stats-dark",
-        title: "Dark Style",
-        imageUrl:
-          "https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=ffffff&icon_color=00d73d&text_color=ffffff&bg_color=00000000",
-      },
-      {
-        id: "stats-colorful",
-        title: "Colorful Style",
-        imageUrl:
-          "https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=00d73d&icon_color=00d73d&text_color=000000&bg_color=00000000",
-      },
-    ],
-  },
-  {
-    id: "language-stats",
-    title: "Top Languages",
-    description: "Display your most used programming languages",
-    variants: [
-      {
-        id: "lang-default",
-        title: "Default Style",
-        imageUrl:
-          "https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=000000&text_color=000000&bg_color=00000000",
-      },
-    ],
-  },
-  {
-    id: "streak-stats",
-    title: "GitHub Streak",
-    description: "Show your GitHub streak statistics",
-    variants: [
-      {
-        id: "streak-default",
-        title: "Default Style",
-        imageUrl:
-          "https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=000000&fire=00d73d&currStreakNum=000000&sideNums=000000&currStreakLabel=000000&sideLabels=000000&dates=000000&stroke=000000&background=ffffff00",
-      },
-    ],
-  },
-  {
-    id: "contribution-stats",
-    title: "Contribution Graph",
-    description: "Display your contribution activity graph",
-    variants: [
-      {
-        id: "contrib-default",
-        title: "Default Style",
-        imageUrl:
-          "https://github-readme-activity-graph.vercel.app/graph?username=b0ney-1&bg_color=00000000&color=000000&line=000000&point=000000&area_color=000000&area=true&hide_border=true",
-      },
-    ],
-  },
-  {
-    id: "trophy-stats",
-    title: "GitHub Trophies",
-    description: "Showcase your GitHub achievements",
-    variants: [
-      {
-        id: "trophy-default",
-        title: "Default Style",
-        imageUrl:
-          "https://github-profile-trophy.vercel.app/?username=b0ney-1&theme=flat&title_color=000000&text_color=000000&bg_color=00000000&no-frame=true",
-      },
-    ],
-  },
-];
-
 const StatsConfigInput: React.FC<StepComponentProps> = ({
   value = {},
   onChange,
   formData,
 }) => {
-  const accentColor = formData?.accentColor || "#000000";
-  const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>(
-    GITHUB_STATS.reduce(
-      (acc, stat) => ({
-        ...acc,
-        [stat.id]: true,
-      }),
-      {}
-    )
-  );
+  const [isLoading, setIsLoading] = useState<Record<string, boolean>>({});
+  const [user, setUser] = useState<any>(null);
 
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
+
+  const githubUsername = user?.user_metadata?.user_name;
+
+  const GITHUB_STATS: StatType[] = [
+    {
+      id: "github-stats",
+      title: "GitHub Statistics",
+      description: "Show your GitHub statistics",
+      variants: [
+        {
+          id: "default",
+          title: "Default Style",
+          imageUrl: `https://github-readme-stats.vercel.app/api?username=${githubUsername}&show_icons=true&hide_border=true&bg_color=00000000`,
+        },
+      ],
+    },
+    {
+      id: "language-stats",
+      title: "Top Languages",
+      description: "Show your most used programming languages",
+      variants: [
+        {
+          id: "default",
+          title: "Default Style",
+          imageUrl: `https://github-readme-stats.vercel.app/api/top-langs/?username=${githubUsername}&layout=compact&hide_border=true&bg_color=00000000`,
+        },
+      ],
+    },
+    {
+      id: "streak-stats",
+      title: "GitHub Streak",
+      description: "Show your GitHub streak statistics",
+      variants: [
+        {
+          id: "default",
+          title: "Default Style",
+          imageUrl: `https://github-readme-streak-stats.herokuapp.com/?user=${githubUsername}&hide_border=true&background=00000000`,
+        },
+      ],
+    },
+    {
+      id: "contribution-stats",
+      title: "Contribution Graph",
+      description: "Show your GitHub contribution graph",
+      variants: [
+        {
+          id: "default",
+          title: "Default Style",
+          imageUrl: `https://github-contribution-graph.ez4o.com/?username=${githubUsername}&theme=github-light&hide_border=true&bg_color=00000000`,
+        },
+      ],
+    },
+    {
+      id: "trophy-stats",
+      title: "GitHub Trophies",
+      description: "Showcase your GitHub achievements",
+      variants: [
+        {
+          id: "trophy-default",
+          title: "Default Style",
+          imageUrl: `https://github-profile-trophy.vercel.app/?username=${githubUsername}&theme=flat&title_color=000000&text_color=000000&no-bg=true&no-frame=true`,
+        },
+      ],
+    },
+  ];
+
+  const accentColor = formData?.accentColor || "#000000";
   const handleToggleStat = useCallback(
     (statId: string, enabled: boolean) => {
       // Convert the ID to match what we use in the review
@@ -1028,31 +998,31 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
 
       switch (statId) {
         case "github":
-          return `https://github-readme-stats.vercel.app/api?username=b0ney-1&show_icons=true&count_private=true&hide_border=true&title_color=${colorHex}&icon_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
+          return `https://github-readme-stats.vercel.app/api?username=${githubUsername}&show_icons=true&hide_border=true&title_color=${colorHex}&icon_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
         case "language":
-          return `https://github-readme-stats.vercel.app/api/top-langs/?username=b0ney-1&layout=compact&hide_border=true&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
+          return `https://github-readme-stats.vercel.app/api/top-langs/?username=${githubUsername}&layout=compact&hide_border=true&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00`;
         case "streak":
-          return `https://github-readme-streak-stats.herokuapp.com/?user=b0ney-1&hide_border=true&ring=${colorHex}&fire=${colorHex}&currStreakNum=${colorHex}&sideNums=${colorHex}&currStreakLabel=${colorHex}&sideLabels=${colorHex}&dates=${colorHex}&stroke=${colorHex}&background=ffffff00`;
+          return `https://github-readme-streak-stats.herokuapp.com/?user=${githubUsername}&hide_border=true&ring=${colorHex}&fire=${colorHex}&currStreakNum=${colorHex}&sideNums=${colorHex}&currStreakLabel=${colorHex}&sideLabels=${colorHex}&dates=${colorHex}&stroke=${colorHex}&background=ffffff00`;
         case "contribution":
-          return `https://github-readme-activity-graph.vercel.app/graph?username=b0ney-1&bg_color=ffffff00&color=${colorHex}&line=${colorHex}&point=${colorHex}&area_color=${colorHex}&area=true&hide_border=true`;
+          return `https://github-readme-activity-graph.vercel.app/graph?username=${githubUsername}&bg_color=ffffff00&color=${colorHex}&line=${colorHex}&point=${colorHex}&area_color=${colorHex}&area=true&hide_border=true`;
         case "trophy":
-          return `https://github-profile-trophy.vercel.app/?username=b0ney-1&theme=flat&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00&no-frame=true`;
+          return `https://github-profile-trophy.vercel.app/?username=${githubUsername}&theme=flat&title_color=${colorHex}&text_color=${colorHex}&bg_color=ffffff00&no-frame=true`;
         default:
           return "";
       }
     },
-    [accentColor]
+    [accentColor, githubUsername]
   );
 
   return (
     <div className="w-full flex flex-col space-y-6">
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-center">
-          GitHub Profile Statistics
-        </h3>
-        <p className="text-sm text-muted-foreground text-center">
-          Select the statistics you want to display on your profile
-        </p>
+        <kbd className="hidden sm:inline-flex">
+          <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+            Select the statistics you want to display on your profile
+          </span>
+        </kbd>
+        <p className="text-sm text-muted-foreground"></p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -1066,15 +1036,15 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
                     "group relative rounded-lg border-2 transition-all duration-200 cursor-pointer",
                     "bg-background dark:bg-background/5",
                     isEnabled
-                      ? "border-primary shadow-md bg-primary/5 dark:bg-primary/10"
+                      ? "border-primary shadow-md "
                       : "border-border hover:border-primary/50"
                   )}
                 >
                   {/* Preview Image */}
                   <div className="p-4 pb-2">
-                    <div className="aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-white/5">
+                    <div className="aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-black">
                       {isLoading[stat.id] && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+                        <div className="absolute inset-0 flex items-center justify-center bg-background">
                           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                         </div>
                       )}
@@ -1119,7 +1089,7 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
                   <DialogTitle>{stat.title}</DialogTitle>
                   <DialogDescription>{stat.description}</DialogDescription>
                 </DialogHeader>
-                <div className="w-full aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-white/5">
+                <div className="w-full aspect-[2/1] relative rounded-lg overflow-hidden bg-white dark:bg-black">
                   <img
                     src={getPreviewUrl(stat.id.replace(/-stats$/, ""))}
                     alt={stat.title}
@@ -1168,7 +1138,7 @@ const EmojiToggleInput: React.FC<StepComponentProps> = ({
     if (e.key === " ") {
       // Space key
       e.preventDefault();
-      onChange(!value);
+      onChange(value === undefined ? false : !value);
     } else if (onKeyDown) {
       onKeyDown(e);
     }
@@ -1188,14 +1158,14 @@ const EmojiToggleInput: React.FC<StepComponentProps> = ({
           <Switch
             ref={inputRef}
             id="emoji-toggle"
-            checked={value}
-            onCheckedChange={onChange}
+            checked={value ?? true}
+            onCheckedChange={(checked) => onChange(checked)}
           />
         </div>
       </div>
       <kbd className="absolute left-4 bottom-2 hidden sm:inline-flex">
         <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-          Enter ↵ to continue
+          Press spacebar to toggle
         </span>
       </kbd>
     </div>
@@ -1212,7 +1182,7 @@ const AnimatedSvgToggleInput: React.FC<StepComponentProps> = ({
     if (e.key === " ") {
       // Space key
       e.preventDefault();
-      onChange(!value);
+      onChange(value === undefined ? false : !value);
     } else if (onKeyDown) {
       onKeyDown(e);
     }
@@ -1232,14 +1202,14 @@ const AnimatedSvgToggleInput: React.FC<StepComponentProps> = ({
           <Switch
             ref={inputRef}
             id="svg-toggle"
-            checked={value}
-            onCheckedChange={onChange}
+            checked={value ?? true}
+            onCheckedChange={(checked) => onChange(checked)}
           />
         </div>
       </div>
       <kbd className="absolute left-4 bottom-2 hidden sm:inline-flex">
         <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-          Enter ↵ to continue
+          Press spacebar to toggle
         </span>
       </kbd>
     </div>

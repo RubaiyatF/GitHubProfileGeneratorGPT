@@ -127,11 +127,8 @@ export default function PreviewPage() {
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center bg-background">
-      {/* Title */}
-      <h1 className="text-3xl font-bold mb-8">Preview Your GitHub Profile</h1>
-
       {/* Main Content Area */}
-      <div className="w-full max-w-[1400px] px-8 flex-grow relative">
+      <div className="w-full max-w-[1400px] px-8 py-20 flex-grow relative">
         <Safari
           url="github.com"
           content={content}
