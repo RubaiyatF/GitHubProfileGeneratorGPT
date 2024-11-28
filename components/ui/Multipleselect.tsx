@@ -87,6 +87,8 @@ interface MultipleSelectorProps {
 export interface MultipleSelectorRef {
   selectedValue: Option[];
   input: HTMLInputElement;
+  focus: () => void;
+  reset: () => void;
 }
 
 export function useDebounce<T>(value: T, delay?: number): T {
@@ -223,7 +225,8 @@ const MultipleSelector = React.forwardRef<
       () => ({
         selectedValue: [...selected],
         input: inputRef.current as HTMLInputElement,
-        focus: () => inputRef.current?.focus(),
+        focus: () => inputRef?.current?.focus(),
+        reset: () => setSelected([]),
       }),
       [selected]
     );
@@ -236,6 +239,7 @@ const MultipleSelector = React.forwardRef<
         !inputRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
+        inputRef.current.blur();
       }
     };
 
@@ -462,7 +466,7 @@ const MultipleSelector = React.forwardRef<
           )}
           onClick={() => {
             if (disabled) return;
-            inputRef.current?.focus();
+            inputRef?.current?.focus();
           }}
         >
           <div className="relative flex flex-wrap gap-1">
@@ -566,7 +570,7 @@ const MultipleSelector = React.forwardRef<
                 setOnScrollbar(true);
               }}
               onMouseUp={() => {
-                inputRef.current?.focus();
+                inputRef?.current?.focus();
               }}
             >
               {isLoading ? (

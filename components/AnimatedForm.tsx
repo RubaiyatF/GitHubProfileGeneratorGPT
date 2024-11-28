@@ -326,10 +326,15 @@ export const AnimatedForm: React.FC<{
   };
 
   const handleFormKeyDown = (e: React.KeyboardEvent) => {
+    // Check if the current step uses MultipleSelector
+    const isMultiSelectorStep = steps[step - 1].key === "languages" || steps[step - 1].key === "expertise";
+
     if (
-      e.target instanceof HTMLTextAreaElement &&
-      e.key === "Enter" &&
-      e.shiftKey
+      (e.target instanceof HTMLTextAreaElement &&
+        e.key === "Enter" &&
+        e.shiftKey) ||
+      // Prevent Enter key from triggering step progression for MultipleSelector steps
+      (isMultiSelectorStep && e.key === "Enter")
     ) {
       return;
     }
@@ -347,10 +352,15 @@ export const AnimatedForm: React.FC<{
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Check if the current step uses MultipleSelector
+      const isMultiSelectorStep = steps[step - 1].key === "languages" || steps[step - 1].key === "expertise";
+
       if (
-        e.target instanceof HTMLTextAreaElement &&
-        e.key === "Enter" &&
-        e.shiftKey
+        (e.target instanceof HTMLTextAreaElement &&
+          e.key === "Enter" &&
+          e.shiftKey) ||
+        // Prevent Enter key from triggering step progression for MultipleSelector steps
+        (isMultiSelectorStep && e.key === "Enter")
       ) {
         return;
       }
@@ -366,7 +376,7 @@ export const AnimatedForm: React.FC<{
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [step]);
+  }, [step, steps]);
 
   if (!steps || steps.length === 0) {
     return null;

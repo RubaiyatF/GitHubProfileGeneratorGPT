@@ -437,27 +437,39 @@ const LanguagesInput: React.FC<StepComponentProps> = ({
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <MultipleSelector
-      value={value || []}
-      defaultOptions={LANGUAGES}
-      placeholder="Select languages you speak..."
-      creatable
-      emptyIndicator={
-        <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-          No languages found. Type to create a new one.
-        </p>
-      }
-      onChange={onChange}
-    />
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        Enter to add the language ↵
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  // Create ref for the MultipleSelector
+  const multipleSelectorRef = React.useRef<HTMLInputElement>(null);
+
+  // Focus on mount
+  React.useEffect(() => {
+    if (multipleSelectorRef.current) {
+      multipleSelectorRef.current.focus();
+    }
+  }, []);
+
+  return (
+    <div className="relative w-full px-12 py-12">
+      <MultipleSelector
+        value={value || []}
+        defaultOptions={LANGUAGES}
+        placeholder="Select languages you speak..."
+        creatable
+        emptyIndicator={
+          <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+            No languages found. Type to create a new one.
+          </p>
+        }
+        onChange={onChange}
+      />
+      <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          Enter to add the language ↵
+        </span>
+      </kbd>
+    </div>
+  );
+};
 
 const EXPERTISE = [
   { value: "javascript", label: "JavaScript" },
@@ -498,27 +510,39 @@ const ExpertiseInput: React.FC<StepComponentProps> = ({
   onChange,
   onKeyDown,
   inputRef,
-}) => (
-  <div className="relative w-full px-12 py-12">
-    <MultipleSelector
-      value={value || []}
-      defaultOptions={EXPERTISE}
-      placeholder="Select your areas of expertise..."
-      creatable
-      emptyIndicator={
-        <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-          Type to create a new one.
-        </p>
-      }
-      onChange={onChange}
-    />
-    <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
-      <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
-        Enter to add↵
-      </span>
-    </kbd>
-  </div>
-);
+}) => {
+  // Create ref for the MultipleSelector
+  const multipleSelectorRef = React.useRef<HTMLInputElement>(null);
+
+  // Focus on mount
+  React.useEffect(() => {
+    if (multipleSelectorRef.current) {
+      multipleSelectorRef.current.focus();
+    }
+  }, []);
+
+  return (
+    <div className="relative w-full px-12 py-12">
+      <MultipleSelector
+        value={value || []}
+        defaultOptions={EXPERTISE}
+        placeholder="Select your areas of expertise..."
+        creatable
+        emptyIndicator={
+          <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+            Type to create a new one.
+          </p>
+        }
+        onChange={onChange}
+      />
+      <kbd className="absolute right-4 bottom-2 hidden sm:inline-flex">
+        <span className="text-xs font-semibold px-2 py-1 rounded text-gray-500">
+          Enter to add↵
+        </span>
+      </kbd>
+    </div>
+  );
+};
 
 const RecentAchievementsInput: React.FC<StepComponentProps> = ({
   value,
