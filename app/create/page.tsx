@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useForm, FormState, FormProvider } from "@/context/FormContext";
+import { useForm, FormProvider } from "@/context/FormContext";
 import { useRouter } from "next/navigation";
 import { AnimatedForm } from "@/components/AnimatedForm";
 import ProfileReview from "@/components/ProfileReview";
@@ -158,7 +158,7 @@ export default function CreatePage({ searchParams }: CreatePageProps) {
           const handleStepChange = (
             step: number,
             value: any,
-            key: keyof FormState
+            key: keyof any
           ) => {
             dispatch({
               type: "UPDATE_FIELD",

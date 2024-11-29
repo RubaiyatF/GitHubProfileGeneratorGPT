@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useState, ReactNode } from 'react';
 
 // Define the shape of the form state
 export interface FormState {
@@ -9,34 +9,41 @@ export interface FormState {
   // Add other form fields as needed
 }
 
-// Define the context type
+type FormAction = 
+  | { type: 'SET_FORM_DATA'; payload: any }
+  | { type: 'UPDATE_FIELD'; payload: { field: keyof FormState; value: any } };
+
 interface FormContextType {
-  formState: FormState;
-  updateFormState: (newState: Partial<FormState>) => void;
+  state: FormState;
+  dispatch: React.Dispatch<FormAction>;
   currentStep: number;
   setCurrentStep: (step: number) => void;
 }
 
-// Create the context
+const formReducer = (state: FormState, action: FormAction): FormState => {
+  switch (action.type) {
+    case 'SET_FORM_DATA':
+      return { ...state, ...action.payload };
+    case 'UPDATE_FIELD':
+      return { ...state, [action.payload.field]: action.payload.value };
+    default:
+      return state;
+  }
+};
+
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
-// Create a provider component
 export function FormProvider({ children }: { children: ReactNode }) {
-  const [formState, setFormState] = useState<FormState>({});
+  const [state, dispatch] = useReducer(formReducer, {});
   const [currentStep, setCurrentStep] = useState(0);
 
-  const updateFormState = (newState: Partial<FormState>) => {
-    setFormState(prevState => ({ ...prevState, ...newState }));
-  };
-
   return (
-    <FormContext.Provider value={{ formState, updateFormState, currentStep, setCurrentStep }}>
+    <FormContext.Provider value={{ state, dispatch, currentStep, setCurrentStep }}>
       {children}
     </FormContext.Provider>
   );
 }
 
-// Custom hook to use the form context
 export function useForm() {
   const context = useContext(FormContext);
   if (context === undefined) {
