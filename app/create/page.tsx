@@ -153,7 +153,7 @@ export default function CreatePage({ searchParams }: CreatePageProps) {
   const handleStepChange = (step: number, value: any, key: string) => {
     dispatch({
       type: "UPDATE_FIELD",
-      payload: { field: key, value },
+      payload: { field: key as keyof FormState, value },
     });
   };
 
