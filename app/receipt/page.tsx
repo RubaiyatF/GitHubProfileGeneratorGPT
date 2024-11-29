@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Download, Linkedin, Twitter } from "lucide-react";
 import { motion } from "framer-motion";
+import FlickeringGrid from "@/components/ui/flickering-grid";
 
 interface UserData {
   id: string;
@@ -116,19 +117,21 @@ export default function CardPage() {
           {/* Right Section - Card and Buttons */}
           <div className="w-full lg:w-2/5 flex flex-col items-center gap-8">
             <Card className="w-full max-w-3xl bg-white relative overflow-hidden">
-              {/* Decorative accent circles */}
-              <div
-                className="absolute -top-24 -right-24 w-48 h-48 rounded-full opacity-10"
-                style={{ backgroundColor: accentColor }}
-              />
-              <div
-                className="absolute -bottom-32 -left-32 w-64 h-64 rounded-full opacity-10"
-                style={{ backgroundColor: accentColor }}
+              {/* Flickering Grid Background */}
+              <FlickeringGrid
+                className="absolute inset-0 size-full"
+                squareSize={4}
+                gridGap={6}
+                color={accentColor}
+                maxOpacity={0.15}
+                flickerChance={0.1}
+                height={800}
+                width={800}
               />
 
               <div className="relative">
                 {/* Header with logo and ID */}
-                <div className="pt-8 px-8 flex items-center gap-4">
+                <div className="pt-4 px-8 flex items-center gap-4">
                   <div className="w-8 h-8">
                     <AnimatedCatLogo color={accentColor} />
                   </div>
@@ -144,7 +147,7 @@ export default function CardPage() {
                 </div>
 
                 {/* Main content */}
-                <div className="px-8 py-8 flex justify-between items-center gap-12">
+                <div className="px-8 py-4 flex justify-between items-center gap-12">
                   <div className="flex items-center gap-6">
                     {/* Profile image with accent border */}
                     <div
@@ -193,10 +196,10 @@ export default function CardPage() {
 
                 {/* Footer with subtle separator */}
                 <div
-                  className="h-[1px] mx-8 mb-3"
+                  className="h-[1px] mx-8 mb-2"
                   style={{ backgroundColor: lightAccentColor }}
                 />
-                <div className="px-8 pb-6 flex justify-between items-center">
+                <div className="px-8 pb-4 flex justify-between items-center">
                   <p className="text-sm" style={{ color: accentColor }}>
                     🔮 Powered by metaschool
                   </p>
