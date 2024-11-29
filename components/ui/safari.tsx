@@ -99,7 +99,7 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
               code: ({ node, inline, className, children, ...props }: any) => {
                 if (inline) {
                   return (
-                    <code 
+                    <code
                       className="bg-[#f6f8fa] dark:bg-[#161b22] px-1.5 py-0.5 rounded-md text-sm 
                                border border-[#d0d7de] dark:border-[#30363d] text-[#24292f] dark:text-[#c9d1d9]"
                       {...props}
@@ -122,8 +122,8 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
                 );
               },
               p: ({ node, children, ...props }) => (
-                <p 
-                  {...props} 
+                <p
+                  {...props}
                   className="mb-4 leading-[1.5] text-[#24292f] dark:text-[#c9d1d9]"
                 >
                   {children}
@@ -142,32 +142,45 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
                 />
               ),
               h3: ({ node, ...props }) => (
-                <h3 
-                  {...props} 
-                  className="text-[20px] leading-[1.25] font-semibold mb-4 mt-6 text-[#24292f] dark:text-[#c9d1d9]" 
+                <h3
+                  {...props}
+                  className="text-[20px] leading-[1.25] font-semibold mb-4 mt-6 text-[#24292f] dark:text-[#c9d1d9]"
                 />
               ),
               ul: ({ node, ...props }) => (
-                <ul {...props} className="list-disc pl-[2em] mb-4 text-[#24292f] dark:text-[#c9d1d9]" />
+                <ul
+                  {...props}
+                  className="list-disc pl-[2em] mb-4 text-[#24292f] dark:text-[#c9d1d9]"
+                />
               ),
               ol: ({ node, ...props }) => (
-                <ol {...props} className="list-decimal pl-[2em] mb-4 text-[#24292f] dark:text-[#c9d1d9]" />
+                <ol
+                  {...props}
+                  className="list-decimal pl-[2em] mb-4 text-[#24292f] dark:text-[#c9d1d9]"
+                />
               ),
               li: ({ node, checked, ...props }: any) => {
-                if (checked !== null) {
+                // Only render checkbox if it's explicitly a task list item
+                if (typeof checked === 'boolean') {
                   return (
                     <li className="flex items-start mb-1 text-[#24292f] dark:text-[#c9d1d9]">
-                      <input 
-                        type="checkbox" 
-                        checked={checked} 
-                        readOnly 
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        readOnly
                         className="mt-1 mr-2 rounded border-[#d0d7de] dark:border-[#30363d]"
                       />
                       <span>{props.children}</span>
                     </li>
                   );
                 }
-                return <li {...props} className="mb-1 text-[#24292f] dark:text-[#c9d1d9]" />;
+                // Regular list item
+                return (
+                  <li
+                    {...props}
+                    className="mb-1 text-[#24292f] dark:text-[#c9d1d9]"
+                  />
+                );
               },
               blockquote: ({ node, ...props }) => (
                 <blockquote

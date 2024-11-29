@@ -64,20 +64,11 @@ export default function PreviewPage() {
       .replace(/^```markdown\n/, "")
       .replace(/\n```$/, "");
 
-    // Create a blob from the content
-    const blob = new Blob([cleanContent], { type: "text/markdown" });
-    const url = window.URL.createObjectURL(blob);
+    // Store the content in localStorage for the receipt page
+    localStorage.setItem("downloadContent", cleanContent);
 
-    // Create a temporary anchor element and trigger download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "README.md";
-    document.body.appendChild(a);
-    a.click();
-
-    // Cleanup
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
+    // Navigate to receipt page
+    router.push("/receipt");
   };
 
   const generateProfile = async () => {
