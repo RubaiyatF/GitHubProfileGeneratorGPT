@@ -9,8 +9,6 @@ import { useState } from "react";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 
 export default function Home() {
-  const router = useRouter();
-  const supabase = createClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGitHubSignIn = async () => {

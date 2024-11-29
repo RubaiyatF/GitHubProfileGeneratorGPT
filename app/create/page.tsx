@@ -1,11 +1,9 @@
 "use client";
-
 import React from "react";
 import { useForm } from "@/context/FormContext";
 import { useRouter } from "next/navigation";
 import { AnimatedForm } from "@/components/AnimatedForm";
 import ProfileReview from "@/components/ProfileReview";
-
 // Import all input components
 import {
   ProfessionalTitleInput,

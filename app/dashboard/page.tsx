@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { PlusCircle, History } from "lucide-react";
 import { useState, useEffect } from "react";
-import LoadingSpinner from "@/components/ui/loading-spinner";
 import TypingAnimation from "@/components/ui/typing-animation";
 import { createClient } from "@/lib/supabase";
 
