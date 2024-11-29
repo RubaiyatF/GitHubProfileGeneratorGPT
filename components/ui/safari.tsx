@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Users, Building2, MapPin, Link as LinkIcon } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase";
 
 export interface SafariProps extends SVGProps<SVGSVGElement> {
   url?: string;
@@ -26,6 +28,35 @@ interface DivProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const GitHubProfileLayout = ({ content }: { content: string }) => {
+  const [formData, setFormData] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Get form data from localStorage
+        const storedData = localStorage.getItem("profileData");
+        if (storedData) {
+          const data = JSON.parse(storedData);
+          setFormData(data);
+        }
+
+        // Get user data from Supabase
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          setUser(user);
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div className="flex w-full min-h-full bg-white dark:bg-[#0D1117]">
       {/* Left Sidebar */}
@@ -33,7 +64,7 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
         {/* Profile Picture */}
         <div className="mb-4">
           <img
-            src="/api/placeholder/296/296"
+            src={user?.user_metadata?.avatar_url || "/api/placeholder/296/296"}
             alt="Profile"
             className="w-full rounded-full border-2 border-transparent hover:border-gray-300 dark:hover:border-gray-700 transition-colors"
           />
@@ -42,40 +73,57 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
         {/* Name & Bio */}
         <div className="mb-4">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Display Name
+            {user?.user_metadata?.name || "Display Name"}
           </h1>
-          <div className="text-gray-600 dark:text-gray-400 mb-4">username</div>
-          <div className="text-gray-700 dark:text-gray-300">Bio text here</div>
+          <div className="text-gray-600 dark:text-gray-400 mb-4">
+            @{user?.user_metadata?.preferred_username || "username"}
+          </div>
+          <div className="text-gray-700 dark:text-gray-300">
+            {formData?.bio || "Software Developer"}
+          </div>
         </div>
 
         {/* Stats */}
         <div className="flex items-center mb-4 text-sm text-gray-600 dark:text-gray-400">
           <Users className="w-4 h-4 mr-1" />
           <span className="mr-3">
-            <strong className="text-gray-900 dark:text-white">100</strong>{" "}
+            <strong className="text-gray-900 dark:text-white">-</strong>{" "}
             followers
           </span>
           ·
           <span className="ml-3">
-            <strong className="text-gray-900 dark:text-white">50</strong>{" "}
+            <strong className="text-gray-900 dark:text-white">-</strong>{" "}
             following
           </span>
         </div>
 
         {/* Additional Info */}
         <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-          <div className="flex items-center">
-            <Building2 className="w-4 h-4 mr-2" />
-            Organization
-          </div>
-          <div className="flex items-center">
-            <MapPin className="w-4 h-4 mr-2" />
-            Location
-          </div>
-          <div className="flex items-center">
-            <LinkIcon className="w-4 h-4 mr-2" />
-            Website
-          </div>
+          {formData?.company && (
+            <div className="flex items-center">
+              <Building2 className="w-4 h-4 mr-2" />
+              {formData.company}
+            </div>
+          )}
+          {formData?.location && (
+            <div className="flex items-center">
+              <MapPin className="w-4 h-4 mr-2" />
+              {formData.location}
+            </div>
+          )}
+          {formData?.website && (
+            <div className="flex items-center">
+              <LinkIcon className="w-4 h-4 mr-2" />
+              <a
+                href={formData.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-blue-500 hover:underline"
+              >
+                {formData.website.replace(/^https?:\/\//, "")}
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
@@ -161,7 +209,7 @@ const GitHubProfileLayout = ({ content }: { content: string }) => {
               ),
               li: ({ node, checked, ...props }: any) => {
                 // Only render checkbox if it's explicitly a task list item
-                if (typeof checked === 'boolean') {
+                if (typeof checked === "boolean") {
                   return (
                     <li className="flex items-start mb-1 text-[#24292f] dark:text-[#c9d1d9]">
                       <input

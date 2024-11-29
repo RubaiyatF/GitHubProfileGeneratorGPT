@@ -213,16 +213,16 @@ export default function CardPage() {
                 </h1>
                 <p className="text-center lg:text-left text-xl lg:text-2xl text-muted-foreground">
                   We've created a GitHub profile card for you that you can
-                  download and share. Others can scan the QR code to quickly visit
-                  your GitHub profile.
+                  download and share. Others can scan the QR code to quickly
+                  visit your GitHub profile.
                 </p>
                 <p className="text-center lg:text-left text-sm text-muted-foreground">
-                  Not sure how to set this as your GitHub Profile? Check out the{" "}
+                  Not sure how to set your GitHub Profile? Check out the{" "}
                   <a
                     href="https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:text-blue-600 underline"
+                    className="text-black hover:text-blue-600 underline decoration-1 underline-offset-2 transition-colors duration-200 dark:text-white"
                   >
                     official GitHub documentation
                   </a>{" "}
@@ -331,7 +331,10 @@ export default function CardPage() {
                             style={{ backgroundColor: lightAccentColor }}
                           />
                           <div className="px-8 pb-4 flex justify-between items-center">
-                            <p className="text-sm" style={{ color: accentColor }}>
+                            <p
+                              className="text-sm"
+                              style={{ color: accentColor }}
+                            >
                               🔮 Powered by metaschool
                             </p>
                             <span
@@ -414,14 +417,20 @@ export default function CardPage() {
               <Button
                 variant="outline"
                 onClick={() =>
-                  setShareDialog({ isOpen: false, platform: null, shareText: "" })
+                  setShareDialog({
+                    isOpen: false,
+                    platform: null,
+                    shareText: "",
+                  })
                 }
               >
                 Cancel
               </Button>
               <Button onClick={handleContinueShare}>
                 Continue to{" "}
-                {shareDialog.platform === "twitter" ? "X (Twitter)" : "LinkedIn"}
+                {shareDialog.platform === "twitter"
+                  ? "X (Twitter)"
+                  : "LinkedIn"}
               </Button>
             </DialogFooter>
           </DialogContent>

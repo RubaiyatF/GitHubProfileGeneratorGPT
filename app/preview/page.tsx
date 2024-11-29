@@ -10,6 +10,16 @@ import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { createClient } from "@/lib/supabase";
+import { motion } from "framer-motion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function PreviewPage() {
   const [formData, setFormData] = useState<any>(null);
@@ -18,6 +28,7 @@ export default function PreviewPage() {
   const [content, setContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMarkdown, setShowMarkdown] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const supabase = createClient();
   const router = useRouter();
 
@@ -93,25 +104,32 @@ export default function PreviewPage() {
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
+      let accumulatedContent = "";
 
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+
+          if (done) {
+            setContent(accumulatedContent);
+            setIsGenerating(false);
+            break;
+          }
 
           const text = decoder.decode(value);
-          setContent((prev) => prev + text);
+          accumulatedContent += text;
+          // Update the preview in real-time, but don't change generating state
+          setContent(accumulatedContent);
         }
       }
     } catch (error) {
       console.error("Error generating profile:", error);
-      // You might want to show an error message to the user here
-    } finally {
       setIsGenerating(false);
     }
   };
 
   const handleEdit = () => {
+    setShowEditDialog(false);
     router.push("/create?step=20");
   };
 
@@ -138,7 +156,7 @@ export default function PreviewPage() {
       </div>
 
       {/* Fixed Overlay Card */}
-      <div className="fixed bottom-6 right-6 animate-slide-up">
+      <div className="fixed bottom-6 right-6 z-50 animate-slide-up">
         <Card className="w-[280px] flex flex-col items-center justify-center gap-8 p-6">
           <div className="flex flex-col items-center space-y-6">
             <div className="w-24 h-24 aspect-square">
@@ -146,14 +164,14 @@ export default function PreviewPage() {
             </div>
             <p className="text-center text-sm text-muted-foreground">
               {isGenerating
-                ? "Generating your profile..."
+                ? "You're almost done, Grab something to drink while i am generating your profile..."
                 : content
                 ? "Like the design? Click the following button to download your profile."
                 : "Click generate to create your GitHub profile"}
             </p>
           </div>
           <div className="w-full space-y-3">
-            {content ? (
+            {!isGenerating && content ? (
               <RainbowButton className="w-full" onClick={handleDownload}>
                 Download README.md
               </RainbowButton>
@@ -174,14 +192,32 @@ export default function PreviewPage() {
                 )}
               </Button>
             )}
-            <Button
-              variant="outline"
-              className="w-full"
-              size="lg"
-              onClick={handleEdit}
-            >
-              Edit Profile
-            </Button>
+            <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  Edit Profile
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure?</DialogTitle>
+                  <DialogDescription>
+                    Going back to edit your profile will reset the current
+                    README generation. You'll need to generate a new README
+                    after making your changes.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowEditDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleEdit}>Continue to Edit</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </Card>
       </div>
