@@ -179,7 +179,7 @@ ${
 <div align="center">
 ${formData.expertise
   .map(
-    (tech) => `
+    (tech: { value: string; label: string }) => `
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/${
     tech.value
