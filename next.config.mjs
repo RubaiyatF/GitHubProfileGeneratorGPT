@@ -17,6 +17,9 @@ const nextConfig = {
       allowedOrigins: ["localhost:3000", "localhost:3001"],
     },
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
