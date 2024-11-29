@@ -1,7 +1,36 @@
+// api/generate/route.ts
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-  const { formData, user } = await req.json();
+  // Create Supabase server client
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+
+  // Get authenticated user data
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  // Get the form data from the request
+  const { formData } = await req.json();
+  
+  // Ensure formData.accentColor exists and has a value
+  if (!formData?.accentColor) {
+    return new Response('Bad Request: accentColor is required', { status: 400 });
+  }
 
   const prompt = `Create a GitHub profile README.md for a developer. Return ONLY the markdown content, no explanations or additional text. Follow this exact structure with proper dark/light mode support:
 

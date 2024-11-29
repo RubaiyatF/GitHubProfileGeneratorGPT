@@ -10,7 +10,6 @@ import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { createClient } from "@/lib/supabase";
-import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -94,7 +93,6 @@ export default function PreviewPage() {
         },
         body: JSON.stringify({
           formData,
-          user,
         }),
       });
 
