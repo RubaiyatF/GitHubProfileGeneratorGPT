@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useForm, FormProvider } from "@/context/FormContext";
+import { useForm, FormState } from "@/context/FormContext";
 import { useRouter } from "next/navigation";
 import { AnimatedForm } from "@/components/AnimatedForm";
 import ProfileReview from "@/components/ProfileReview";
@@ -138,46 +138,33 @@ interface CreatePageProps {
 }
 
 export default function CreatePage({ searchParams }: CreatePageProps) {
+  const { state, dispatch } = useForm();
+  const router = useRouter();
+
+  // Set initial step from searchParams or start from beginning
+  const initialStep = searchParams.step ? parseInt(searchParams.step) : 1;
+
+  const handleSubmit = async (formData: any) => {
+    dispatch({ type: "SET_FORM_DATA", payload: formData });
+    router.push("/preview");
+  };
+
+  const handleStepChange = (step: number, value: any, key: keyof FormState) => {
+    dispatch({
+      type: "UPDATE_FIELD",
+      payload: { field: key, value },
+    });
+  };
+
   return (
-    <FormProvider>
-      <div className="min-h-screen bg-background">
-        {() => {
-          const { state, dispatch } = useForm();
-          const router = useRouter();
-
-          // Set initial step from searchParams or start from beginning
-          const initialStep = searchParams.step
-            ? parseInt(searchParams.step)
-            : 1;
-
-          const handleSubmit = async (formData: any) => {
-            dispatch({ type: "SET_FORM_DATA", payload: formData });
-            router.push("/preview");
-          };
-
-          const handleStepChange = (
-            step: number,
-            value: any,
-            key: keyof any
-          ) => {
-            dispatch({
-              type: "UPDATE_FIELD",
-              payload: { field: key, value },
-            });
-          };
-
-          return (
-            <AnimatedForm
-              steps={steps}
-              onSubmit={handleSubmit}
-              onStepChange={handleStepChange}
-              initialStep={initialStep}
-              initialFormData={state}
-            />
-          );
-        }}
-        ()
-      </div>
-    </FormProvider>
+    <div className="min-h-screen bg-background">
+      <AnimatedForm
+        steps={steps}
+        onSubmit={handleSubmit}
+        onStepChange={handleStepChange}
+        initialStep={initialStep}
+        initialFormData={state}
+      />
+    </div>
   );
 }
