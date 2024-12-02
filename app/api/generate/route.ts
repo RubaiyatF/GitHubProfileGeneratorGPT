@@ -19,17 +19,22 @@ export async function POST(req: Request) {
   );
 
   // Get authenticated user data
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error || !user) {
-    return new Response('Unauthorized', { status: 401 });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   // Get the form data from the request
   const { formData } = await req.json();
-  
+
   // Ensure formData.accentColor exists and has a value
   if (!formData?.accentColor) {
-    return new Response('Bad Request: accentColor is required', { status: 400 });
+    return new Response("Bad Request: accentColor is required", {
+      status: 400,
+    });
   }
 
   const prompt = `Create a GitHub profile README.md for a developer. Return ONLY the markdown content, no explanations or additional text. Follow this exact structure with proper dark/light mode support:
@@ -292,7 +297,7 @@ ${
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
