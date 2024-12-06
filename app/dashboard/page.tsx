@@ -164,7 +164,7 @@ export default function Home() {
                     className="text-center lg:text-left text-lg lg:text-2xl text-muted-foreground"
                     variants={itemVariants}
                   >
-                    What would you like to do?
+                    Get comfy, relax and all you gotta do is just provide me with a few informations for me to generate you a brand new GitHub Profile Readme.
                   </motion.p>
                 </motion.div>
 
