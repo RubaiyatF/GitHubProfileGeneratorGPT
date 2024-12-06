@@ -2,6 +2,17 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// Helper function to generate header section
+const generateHeaderSection = (accentColor: string) => `
+<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://capsule-render.vercel.app/api?type=waving&color=${accentColor}&height=120&section=header&text=Hey%20There!%20👋&fontSize=60&fontColor=ffffff&animation=fadeIn&background=transparent" />
+  <source media="(prefers-color-scheme: light)" srcset="https://capsule-render.vercel.app/api?type=waving&color=${accentColor}&height=120&section=header&text=Hey%20There!%20👋&fontSize=60&fontColor=000000&animation=fadeIn&background=transparent" />
+  <img width="100%" alt="Header" src="https://capsule-render.vercel.app/api?type=waving&color=${accentColor}&height=120&section=header&text=Hey%20There!%20👋&fontSize=60&fontColor=000000&animation=fadeIn&background=transparent" />
+</picture>
+</div>
+`;
+
 // Helper function to generate stats section
 const generateStatsSection = (username: string, accentColor: string) => `
 <div align="center">
@@ -22,7 +33,8 @@ const generateStatsSection = (username: string, accentColor: string) => `
     <source media="(prefers-color-scheme: light)" srcset="https://github-readme-activity-graph.vercel.app/graph?username=${username}&bg_color=transparent&color=000000&line=${accentColor}&point=000000&area=true&hide_border=true" />
     <img alt="Activity Graph" src="https://github-readme-activity-graph.vercel.app/graph?username=${username}&bg_color=transparent&color=000000&line=${accentColor}&point=000000&area=true&hide_border=true" />
   </picture>
-</div>`;
+</div>
+`;
 
 export async function POST(req: Request) {
   try {
@@ -90,7 +102,9 @@ User Profile:
 ${JSON.stringify(profileData, null, 2)}
 
 Required Components:
-1. Header with wave animation
+1. Header with wave animation (Use this exact header):
+${generateHeaderSection(profileData.theme.accentColor)}
+
 2. Introduction/Bio
 3. Professional Experience
 4. Tech Stack
@@ -114,7 +128,8 @@ Technical Requirements:
 - Include all necessary HTML attributes
 - Use the exact badge and stat URLs provided
 
-Return ONLY the complete markdown content.`;
+Return ONLY the complete markdown content.
+`;
 
     const response = await fetch(
       process.env.OPENAI_API_ENDPOINT ||
