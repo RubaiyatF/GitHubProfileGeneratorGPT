@@ -193,13 +193,7 @@ export default function CardPage() {
 
   return (
     <div className="h-screen overflow-hidden">
-      <div
-        className="h-full flex flex-col items-center justify-center bg-background"
-        style={{
-          transform: "scale(1.25)",
-          transformOrigin: "center center",
-        }}
-      >
+      <div className="h-full flex flex-col items-center justify-center bg-background">
         <main className="flex-1 flex items-center justify-evenly w-full max-h-screen">
           <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between px-4">
             {/* Left Section - Welcome Message */}

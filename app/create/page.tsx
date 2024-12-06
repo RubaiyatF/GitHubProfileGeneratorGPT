@@ -25,8 +25,7 @@ import {
   FunFactsInput,
   EmojiToggleInput,
   AnimatedSvgToggleInput,
-} from "@/components/inputs/FormInputs"; // You'll need to create this file to export all inputs
-
+} from "@/components/inputs/FormInputs";
 // Define the steps configuration
 const steps = [
   {

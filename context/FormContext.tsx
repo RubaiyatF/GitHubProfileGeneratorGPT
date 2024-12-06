@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 // Define the form state interface
-interface FormState {
+export interface FormState {
   yearsExperience: any;
   organization: any;
   linkedIn: any;

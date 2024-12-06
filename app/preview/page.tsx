@@ -28,6 +28,7 @@ export default function PreviewPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showMarkdown, setShowMarkdown] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [error, setError] = useState("");
   const supabase = createClient();
   const router = useRouter();
 
@@ -86,6 +87,13 @@ export default function PreviewPage() {
     setContent(""); // Reset content before generating new profile
 
     try {
+      // Get user data from Supabase
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        throw new Error("Failed to get user data");
+      }
+
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
@@ -93,36 +101,40 @@ export default function PreviewPage() {
         },
         body: JSON.stringify({
           formData,
+          user,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to generate profile");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to generate profile");
       }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = "";
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
+      if (!reader) {
+        throw new Error("Failed to read response stream");
+      }
 
-          if (done) {
-            setContent(accumulatedContent);
-            setIsGenerating(false);
-            break;
-          }
+      while (true) {
+        const { done, value } = await reader.read();
 
-          const text = decoder.decode(value);
-          accumulatedContent += text;
-          // Update the preview in real-time, but don't change generating state
+        if (done) {
           setContent(accumulatedContent);
+          setIsGenerating(false);
+          break;
         }
+
+        const text = decoder.decode(value);
+        accumulatedContent += text;
+        setContent(accumulatedContent);
       }
     } catch (error) {
       console.error("Error generating profile:", error);
       setIsGenerating(false);
+      setError(error instanceof Error ? error.message : "Failed to generate profile");
     }
   };
 
@@ -167,6 +179,11 @@ export default function PreviewPage() {
                 ? "Like the design? Click the following button to download your profile."
                 : "Click generate to create your GitHub profile"}
             </p>
+            {error && (
+              <p className="text-center text-sm text-error">
+                {error}
+              </p>
+            )}
           </div>
           <div className="w-full space-y-3">
             {!isGenerating && content ? (

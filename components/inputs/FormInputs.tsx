@@ -976,7 +976,15 @@ const StatsConfigInput: React.FC<StepComponentProps> = ({
     (statId: string, enabled: boolean) => {
       // Convert the ID to match what we use in the review
       const newStatId = statId.replace(/-stats$/, "");
+      const defaultStats = {
+        github: false,
+        language: false,
+        streak: false,
+        contribution: false,
+        trophy: false,
+      };
       const newConfig = {
+        ...defaultStats,
         ...value,
         [newStatId]: enabled,
       };
