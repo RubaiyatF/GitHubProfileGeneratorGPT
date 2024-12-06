@@ -183,7 +183,7 @@ export default function Home() {
                     </Button>
                   </motion.div>
 
-                  <motion.div variants={buttonVariants}>
+                  {/*<motion.div variants={buttonVariants}>
                     <Button
                       onClick={() => handleNavigation("/templates")}
                       variant="outline"
@@ -193,7 +193,7 @@ export default function Home() {
                       <History className="mr-2 h-5 w-5" />
                       View Templates
                     </Button>
-                  </motion.div>
+                  </motion.div>*/}
                 </motion.div>
               </motion.div>
             </div>
