@@ -6,7 +6,7 @@ Built with Next.js and powered by AI technology, this open-source project helps 
 
 ## Live Demo
 
-[Live Demo](#)
+[Live Demo](https://github-profile-generator-gpt-metaschool.vercel.app/)
 
 ## Features
 
