@@ -52,14 +52,12 @@ export default function CardPage() {
         } = await supabase.auth.getUser();
 
         if (user) {
-          console.log("User data in receipt page:", user);
           setUserData(user);
         }
 
         const storedData = localStorage.getItem("profileData");
         if (storedData) {
           const data = JSON.parse(storedData);
-          console.log("Form data in receipt page:", data);
           setFormData(data);
         }
       } catch (error) {

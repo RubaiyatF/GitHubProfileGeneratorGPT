@@ -5,14 +5,12 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  console.log("🎯 Auth Callback - Starting");
 
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const origin = requestUrl.origin;
 
   if (code) {
-    console.log("📝 Auth Callback - Code received");
     const cookieStore = cookies();
 
     const supabase = createServerClient(
@@ -37,7 +35,6 @@ export async function GET(request: Request) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) throw error;
 
-      console.log("✅ Auth Callback - Session created:", !!data.session);
       return NextResponse.redirect(`${origin}/dashboard`);
     } catch (error) {
       console.error("❌ Auth Callback - Error:", error);
@@ -46,6 +43,5 @@ export async function GET(request: Request) {
   }
 
   // Return to home if no code
-  console.log("⚠️ Auth Callback - No code received");
   return NextResponse.redirect(`${origin}?error=no_code`);
 }

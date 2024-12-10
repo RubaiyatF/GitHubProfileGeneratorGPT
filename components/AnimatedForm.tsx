@@ -260,17 +260,16 @@ export const AnimatedForm: React.FC<{
   const [ReviewToggle, setReviewToggle] = useState(false);
   useEffect(() => {
     if (step === steps.length) {
-      console.log("Toggled ");
       setReviewToggle(true);
       // Lock body scroll
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
       // Restore body scroll
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     }
     return () => {
       // Cleanup: restore body scroll when component unmounts
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [step]);
 
@@ -317,17 +316,13 @@ export const AnimatedForm: React.FC<{
     if (onStepChange) {
       onStepChange(step, value, currentStep.key);
     }
-
-    console.log(`Form data updated for step ${step}:`, {
-      key: currentStep.key,
-      value,
-      formData: updatedFormData,
-    });
   };
 
   const handleFormKeyDown = (e: React.KeyboardEvent) => {
     // Check if the current step uses MultipleSelector
-    const isMultiSelectorStep = steps[step - 1].key === "languages" || steps[step - 1].key === "expertise";
+    const isMultiSelectorStep =
+      steps[step - 1].key === "languages" ||
+      steps[step - 1].key === "expertise";
 
     if (
       (e.target instanceof HTMLTextAreaElement &&
@@ -353,7 +348,9 @@ export const AnimatedForm: React.FC<{
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // Check if the current step uses MultipleSelector
-      const isMultiSelectorStep = steps[step - 1].key === "languages" || steps[step - 1].key === "expertise";
+      const isMultiSelectorStep =
+        steps[step - 1].key === "languages" ||
+        steps[step - 1].key === "expertise";
 
       if (
         (e.target instanceof HTMLTextAreaElement &&
@@ -464,7 +461,7 @@ export const AnimatedForm: React.FC<{
         style={{
           maxHeight: "100vh",
           position: "relative",
-          overflow: step === 20 ? "hidden" : "auto"
+          overflow: step === 20 ? "hidden" : "auto",
         }}
       >
         <motion.form

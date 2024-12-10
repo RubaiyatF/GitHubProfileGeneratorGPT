@@ -2,11 +2,9 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  console.log("🚀 Middleware - Current path:", request.nextUrl.pathname);
 
   // Skip middleware for auth callback route
   if (request.nextUrl.pathname.startsWith("/auth/callback")) {
-    console.log("↪️ Skipping middleware for auth callback");
     return NextResponse.next();
   }
 
@@ -45,17 +43,14 @@ export async function middleware(request: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  console.log("👤 Middleware - Session exists:", !!session);
 
   // If no session and trying to access protected route
   if (!session && request.nextUrl.pathname.startsWith("/dashboard")) {
-    console.log("🔒 Redirecting to home - No session");
     return NextResponse.redirect(new URL("/", request.url));
   }
 
   // If session exists and on landing page, redirect to dashboard
   if (session && request.nextUrl.pathname === "/") {
-    console.log("✅ Redirecting to dashboard - Session exists");
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

@@ -40,7 +40,6 @@ export default function PreviewPage() {
         if (storedData) {
           const data = JSON.parse(storedData);
           setFormData(data);
-          console.log("Form data in preview:", data);
         }
 
         // Get user data from Supabase
@@ -49,7 +48,6 @@ export default function PreviewPage() {
         } = await supabase.auth.getUser();
         if (user) {
           setUser(user);
-          console.log("User data in preview:", user);
         }
       } catch (error) {
         console.error("Error loading data:", error);
@@ -88,7 +86,10 @@ export default function PreviewPage() {
 
     try {
       // Get user data from Supabase
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
       if (userError || !user) {
         throw new Error("Failed to get user data");
@@ -134,7 +135,9 @@ export default function PreviewPage() {
     } catch (error) {
       console.error("Error generating profile:", error);
       setIsGenerating(false);
-      setError(error instanceof Error ? error.message : "Failed to generate profile");
+      setError(
+        error instanceof Error ? error.message : "Failed to generate profile"
+      );
     }
   };
 
@@ -179,11 +182,7 @@ export default function PreviewPage() {
                 ? "Like the design? Click the following button to download your profile."
                 : "Click generate to create your GitHub profile"}
             </p>
-            {error && (
-              <p className="text-center text-sm text-error">
-                {error}
-              </p>
-            )}
+            {error && <p className="text-center text-sm text-error">{error}</p>}
           </div>
           <div className="w-full space-y-3">
             {!isGenerating && content ? (

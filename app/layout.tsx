@@ -68,8 +68,6 @@ export default async function RootLayout({
       throw error || new Error("User not found");
     }
 
-    console.log("🏗️ Layout - Authenticated User:", user.email);
-
     return (
       <html lang="en" suppressHydrationWarning>
         <body className={sourceSansPro.className}>
@@ -81,10 +79,8 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <main className="flex min-h-screen flex-col relative">
-                <Navbar user={user} /> 
-                <div className="flex-1 relative">
-                  {children}
-                </div>
+                <Navbar user={user} />
+                <div className="flex-1 relative">{children}</div>
                 <Footer />
                 <Toaster richColors position="top-center" />
               </main>
@@ -107,9 +103,7 @@ export default async function RootLayout({
             >
               <main className="flex min-h-screen flex-col relative">
                 <Navbar user={null} />
-                <div className="flex-1 relative">
-                  {children}
-                </div>
+                <div className="flex-1 relative">{children}</div>
                 <Footer />
                 <Toaster richColors position="top-center" />
               </main>
